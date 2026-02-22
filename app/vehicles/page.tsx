@@ -217,7 +217,7 @@ export default function VehiclesPage() {
 
           <tbody>
             {vehicles.map((v) => {
-              let motDisplay = "-";
+              let motDisplay: React.ReactNode = "-";
 
               if (v.mot) {
                 const today = new Date();
