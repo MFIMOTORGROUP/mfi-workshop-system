@@ -19,7 +19,7 @@ export default function VehiclesPage() {
     repairs: "",
     mot: "",
     transmission: "",
-    key: "",
+    keys_count: "",
     grade: "",
   });
 
@@ -69,7 +69,7 @@ export default function VehiclesPage() {
       repairs: "",
       mot: "",
       transmission: "",
-      key: "",
+      keys_count: "",
       grade: "",
     });
 
@@ -100,7 +100,7 @@ export default function VehiclesPage() {
 
   const exportToCSV = () => {
     if (!vehicles.length) return;
-    const headers = Object.keys(vehicles[0]).join(",");
+    const headers = Object.keys_count(vehicles[0]).join(",");
     const rows = vehicles.map((v) =>
       Object.values(v)
         .map((val) => `"${val ?? ""}"`)
@@ -168,9 +168,9 @@ export default function VehiclesPage() {
       {/* Add/Edit Form */}
       {showForm && (
         <div className="grid grid-cols-2 gap-4 bg-white p-6 mb-6 rounded shadow">
-          {Object.keys(formData).map((field) => (
+          {Object.keys_count(formData).map((field) => (
             <input
-              key={field}
+              keys_count={field}
               type={field === "mot" ? "date" : "text"}
               placeholder={field.replace("_", " ")}
               value={(formData as any)[field]}
@@ -234,7 +234,7 @@ export default function VehiclesPage() {
               }
 
               return (
-                <tr key={v.id} className="border-t">
+                <tr keys_count={v.id} className="border-t">
                   <td className="p-3">{v.make}</td>
                   <td className="p-3">{v.model}</td>
                   <td className="p-3">{v.reg}</td>
