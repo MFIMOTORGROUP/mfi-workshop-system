@@ -26,7 +26,7 @@ export default function VehiclesPage() {
       .order("created_at", { ascending: false });
 
     if (filterMake) {
-      query = query.eq("make", filterMake);
+      query = query.ilike("make", `%${filterMake}%`);
     }
 
     if (filterStatus) {
