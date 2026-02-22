@@ -50,14 +50,19 @@ export default function VehiclesPage() {
       ...formData,
       purchase_price: purchase,
       sale_price: sale,
-      repairs: repairs,
+      repairs,
       profit,
     };
 
     if (editingVehicle) {
-      await supabase.from("vehicles").update(payload).eq("id", editingVehicle.id);
+      await supabase
+        .from("vehicles")
+        .update(payload)
+        .eq("id", editingVehicle.id);
     } else {
-      await supabase.from("vehicles").insert([{ ...payload, status: "In Stock" }]);
+      await supabase
+        .from("vehicles")
+        .insert([{ ...payload, status: "In Stock" }]);
     }
 
     setFormData({
@@ -100,7 +105,9 @@ export default function VehiclesPage() {
 
   const exportToCSV = () => {
     if (!vehicles.length) return;
-    const headers = Object.keys_count(vehicles[0]).join(",");
+
+    const headers = Object.keys(vehicles[0]).join(",");
+
     const rows = vehicles.map((v) =>
       Object.values(v)
         .map((val) => `"${val ?? ""}"`)
@@ -165,12 +172,12 @@ export default function VehiclesPage() {
         </button>
       </div>
 
-      {/* Add/Edit Form */}
+      {/* Add / Edit Form */}
       {showForm && (
         <div className="grid grid-cols-2 gap-4 bg-white p-6 mb-6 rounded shadow">
-          {Object.keys_count(formData).map((field) => (
+          {Object.keys(formData).map((field) => (
             <input
-              keys_count={field}
+              key={field}
               type={field === "mot" ? "date" : "text"}
               placeholder={field.replace("_", " ")}
               value={(formData as any)[field]}
@@ -202,6 +209,8 @@ export default function VehiclesPage() {
               <th className="p-3">Profit</th>
               <th className="p-3">Status</th>
               <th className="p-3">Sold Date</th>
+              <th className="p-3">Keys</th>
+              <th className="p-3">Grade</th>
               <th className="p-3">Actions</th>
             </tr>
           </thead>
@@ -234,7 +243,7 @@ export default function VehiclesPage() {
               }
 
               return (
-                <tr keys_count={v.id} className="border-t">
+                <tr key={v.id} className="border-t">
                   <td className="p-3">{v.make}</td>
                   <td className="p-3">{v.model}</td>
                   <td className="p-3">{v.reg}</td>
@@ -246,6 +255,8 @@ export default function VehiclesPage() {
                   <td className="p-3">
                     {v.sold_date ? formatDate(v.sold_date) : "-"}
                   </td>
+                  <td className="p-3">{v.keys_count}</td>
+                  <td className="p-3">{v.grade}</td>
                   <td className="p-3 flex gap-2">
                     <button
                       onClick={() => toggleStatus(v.id, v.status)}
