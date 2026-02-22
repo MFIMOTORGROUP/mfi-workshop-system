@@ -5,26 +5,8 @@ import { supabase } from "../lib/supabase";
 
 export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<any[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-
   const [filterMake, setFilterMake] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-
-  const [formData, setFormData] = useState<any>({
-    make: "",
-    model: "",
-    reg: "",
-    transmission: "",
-    v5c_status: "",
-    purchase_price: "",
-    sale_price: "",
-    repairs: "",
-    cap_clean_price: "",
-    cap_live_price: "",
-    key: "",
-    grade: "",
-  });
 
   const fetchVehicles = async () => {
     let query = supabase
@@ -48,62 +30,29 @@ export default function VehiclesPage() {
     fetchVehicles();
   }, [filterMake, filterStatus]);
 
-  const handleSaveVehicle = async () => {
-    const purchase = Number(formData.purchase_price);
-    const sale = Number(formData.sale_price);
-    const repairs = Number(formData.repairs);
-    const profit = sale - (purchase + repairs);
-
-    const payload = {
-      ...formData,
-      purchase_price: purchase,
-      sale_price: sale,
-      repairs: repairs,
-      cap_clean_price: Number(formData.cap_clean_price),
-      cap_live_price: Number(formData.cap_live_price),
-      key: Number(formData.key),
-      grade: Number(formData.grade),
-      profit,
-    };
-
-    if (editingId) {
-      await supabase.from("vehicles").update(payload).eq("id", editingId);
-    } else {
-      await supabase.from("vehicles").insert([
-        { ...payload, status: "In Stock" },
-      ]);
-    }
-
-    setEditingId(null);
-    setShowForm(false);
-    setFormData({
-      make: "",
-      model: "",
-      reg: "",
-      transmission: "",
-      v5c_status: "",
-      purchase_price: "",
-      sale_price: "",
-      repairs: "",
-      cap_clean_price: "",
-      cap_live_price: "",
-      key: "",
-      grade: "",
-    });
-
-    fetchVehicles();
-  };
-
   const toggleStatus = async (id: string, currentStatus: string) => {
     const newStatus = currentStatus === "Sold" ? "In Stock" : "Sold";
     await supabase.from("vehicles").update({ status: newStatus }).eq("id", id);
     fetchVehicles();
   };
 
-  const startEdit = (vehicle: any) => {
-    setEditingId(vehicle.id);
-    setFormData(vehicle);
-    setShowForm(true);
+  const exportToCSV = () => {
+    if (vehicles.length === 0) return;
+
+    const headers = Object.keys(vehicles[0]).join(",");
+    const rows = vehicles.map((v) =>
+      Object.values(v)
+        .map((value) => `"${value ?? ""}"`)
+        .join(",")
+    );
+
+    const csvContent = [headers, ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "vehicle_stock.csv";
+    link.click();
   };
 
   return (
@@ -138,55 +87,16 @@ export default function VehiclesPage() {
         >
           Clear
         </button>
+
+        <button
+          onClick={exportToCSV}
+          className="bg-green-600 text-white px-4 py-2 rounded"
+        >
+          Export Excel
+        </button>
       </div>
 
-      <button
-        onClick={() => {
-          setShowForm(!showForm);
-          setEditingId(null);
-        }}
-        className="bg-black text-white px-4 py-2 rounded-lg mb-6"
-      >
-        {editingId ? "Cancel Edit" : "+ Add Vehicle"}
-      </button>
-
-      {showForm && (
-        <div className="bg-white p-6 rounded-xl shadow mb-6 grid grid-cols-2 gap-4">
-
-          {Object.keys(formData).map((field) => (
-            <input
-              key={field}
-              type={
-                [
-                  "purchase_price",
-                  "sale_price",
-                  "repairs",
-                  "cap_clean_price",
-                  "cap_live_price",
-                  "key",
-                  "grade",
-                ].includes(field)
-                  ? "number"
-                  : "text"
-              }
-              placeholder={field.replace(/_/g, " ")}
-              value={formData[field] ?? ""}
-              onChange={(e) =>
-                setFormData({ ...formData, [field]: e.target.value })
-              }
-              className="border p-2 rounded"
-            />
-          ))}
-
-          <button
-            onClick={handleSaveVehicle}
-            className="col-span-2 mt-2 bg-green-600 text-white px-4 py-2 rounded-lg"
-          >
-            {editingId ? "Update Vehicle" : "Save Vehicle"}
-          </button>
-        </div>
-      )}
-
+      {/* VEHICLE LIST */}
       <div className="bg-white rounded-xl shadow p-6">
         {vehicles.length === 0 ? (
           <p>No vehicles found.</p>
@@ -194,34 +104,57 @@ export default function VehiclesPage() {
           <ul className="space-y-4">
             {vehicles.map((vehicle) => (
               <li key={vehicle.id} className="border p-4 rounded-lg">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-start">
                   <div>
-                    <div className="font-semibold">
+                    <div className="font-semibold text-lg">
                       {vehicle.make} {vehicle.model} ({vehicle.reg})
                     </div>
-                    <div>Profit: £{vehicle.profit}</div>
-                    <div>Status: {vehicle.status}</div>
+
+                    <div className="text-sm text-gray-600 mt-2">
+                      Transmission: {vehicle.transmission}
+                    </div>
+
+                    <div className="text-sm text-gray-600">
+                      V5C: {vehicle.v5c_status}
+                    </div>
+
+                    <div className="text-sm text-gray-600">
+                      Keys: {vehicle.key} | Grade: {vehicle.grade}
+                    </div>
+
+                    <div className="text-sm text-gray-600">
+                      CAP Clean: £{vehicle.cap_clean_price} | CAP Live: £{vehicle.cap_live_price}
+                    </div>
+
+                    <div className="text-sm text-gray-600 mt-2">
+                      Purchase: £{vehicle.purchase_price} | Repairs: £{vehicle.repairs} | Sale: £{vehicle.sale_price}
+                    </div>
+
+                    <div
+                      className={`mt-2 font-bold ${
+                        vehicle.profit >= 0
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      Profit: £{vehicle.profit}
+                    </div>
+
+                    <div className="mt-1 text-sm">
+                      Status: {vehicle.status}
+                    </div>
                   </div>
 
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() =>
-                        toggleStatus(vehicle.id, vehicle.status)
-                      }
-                      className="bg-blue-600 text-white px-3 py-1 rounded-lg"
-                    >
-                      {vehicle.status === "Sold"
-                        ? "Mark In Stock"
-                        : "Mark Sold"}
-                    </button>
-
-                    <button
-                      onClick={() => startEdit(vehicle)}
-                      className="bg-yellow-600 text-white px-3 py-1 rounded-lg"
-                    >
-                      Edit
-                    </button>
-                  </div>
+                  <button
+                    onClick={() =>
+                      toggleStatus(vehicle.id, vehicle.status)
+                    }
+                    className="bg-blue-600 text-white px-3 py-1 rounded-lg"
+                  >
+                    {vehicle.status === "Sold"
+                      ? "Mark In Stock"
+                      : "Mark Sold"}
+                  </button>
                 </div>
               </li>
             ))}
