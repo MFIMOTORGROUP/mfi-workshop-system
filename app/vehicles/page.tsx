@@ -7,21 +7,6 @@ export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [filterMake, setFilterMake] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-  const [showForm, setShowForm] = useState(false);
-  const [editingVehicle, setEditingVehicle] = useState<any>(null);
-
-  const [formData, setFormData] = useState({
-    make: "",
-    model: "",
-    reg: "",
-    purchase_price: "",
-    sale_price: "",
-    repairs: "",
-    mot: "",
-    transmission: "",
-    keys_count: "",
-    grade: "",
-  });
 
   const fetchVehicles = async () => {
     let query = supabase
@@ -40,48 +25,8 @@ export default function VehiclesPage() {
     fetchVehicles();
   }, [filterMake, filterStatus]);
 
-  const handleSave = async () => {
-    const purchase = Number(formData.purchase_price);
-    const sale = Number(formData.sale_price);
-    const repairs = Number(formData.repairs);
-    const profit = sale - (purchase + repairs);
-
-    const payload = {
-      ...formData,
-      purchase_price: purchase,
-      sale_price: sale,
-      repairs,
-      profit,
-    };
-
-    if (editingVehicle) {
-      await supabase
-        .from("vehicles")
-        .update(payload)
-        .eq("id", editingVehicle.id);
-    } else {
-      await supabase
-        .from("vehicles")
-        .insert([{ ...payload, status: "In Stock" }]);
-    }
-
-    setFormData({
-      make: "",
-      model: "",
-      reg: "",
-      purchase_price: "",
-      sale_price: "",
-      repairs: "",
-      mot: "",
-      transmission: "",
-      keys_count: "",
-      grade: "",
-    });
-
-    setEditingVehicle(null);
-    setShowForm(false);
-    fetchVehicles();
-  };
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleDateString("en-GB");
 
   const toggleStatus = async (id: string, currentStatus: string) => {
     const newStatus = currentStatus === "Sold" ? "In Stock" : "Sold";
@@ -100,23 +45,49 @@ export default function VehiclesPage() {
     fetchVehicles();
   };
 
-  const formatDate = (date: string) =>
-    new Date(date).toLocaleDateString("en-GB");
-
   const exportToCSV = () => {
     if (!vehicles.length) return;
 
-    const headers = Object.keys(vehicles[0]).join(",");
+    const headers = [
+      "Make",
+      "Model",
+      "Reg",
+      "Mileage",
+      "Purchase Price",
+      "CAP Clean",
+      "CAP Live",
+      "Status",
+      "MOT",
+      "Transmission",
+      "Grade",
+      "V5C",
+      "Keys",
+      "Sold Date",
+    ];
 
-    const rows = vehicles.map((v) =>
-      Object.values(v)
-        .map((val) => `"${val ?? ""}"`)
-        .join(",")
-    );
+    const rows = vehicles.map((v) => [
+      v.make,
+      v.model,
+      v.reg,
+      v.mileage,
+      v.purchase_price,
+      v.cap_clean_price,
+      v.cap_live_price,
+      v.status,
+      v.mot,
+      v.transmission,
+      v.grade,
+      v.v5c_status,
+      v.keys_count,
+      v.sold_date,
+    ]);
 
-    const blob = new Blob([[headers, ...rows].join("\n")], {
-      type: "text/csv",
-    });
+    const csvContent =
+      headers.join(",") +
+      "\n" +
+      rows.map((r) => r.map((val) => `"${val ?? ""}"`).join(",")).join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
 
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -163,39 +134,7 @@ export default function VehiclesPage() {
         >
           Export Excel
         </button>
-
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-black text-white px-4 py-2 rounded"
-        >
-          + Add Vehicle
-        </button>
       </div>
-
-      {/* Add / Edit Form */}
-      {showForm && (
-        <div className="grid grid-cols-2 gap-4 bg-white p-6 mb-6 rounded shadow">
-          {Object.keys(formData).map((field) => (
-            <input
-              key={field}
-              type={field === "mot" ? "date" : "text"}
-              placeholder={field.replace("_", " ")}
-              value={(formData as any)[field]}
-              onChange={(e) =>
-                setFormData({ ...formData, [field]: e.target.value })
-              }
-              className="border p-2 rounded"
-            />
-          ))}
-
-          <button
-            onClick={handleSave}
-            className="col-span-2 bg-blue-600 text-white py-2 rounded"
-          >
-            Save
-          </button>
-        </div>
-      )}
 
       {/* Table */}
       <div className="overflow-x-auto bg-white rounded shadow">
@@ -205,13 +144,18 @@ export default function VehiclesPage() {
               <th className="p-3">Make</th>
               <th className="p-3">Model</th>
               <th className="p-3">Reg</th>
-              <th className="p-3">MOT</th>
-              <th className="p-3">Profit</th>
+              <th className="p-3">Mileage</th>
+              <th className="p-3">Purchase</th>
+              <th className="p-3">CAP Clean</th>
+              <th className="p-3">CAP Live</th>
               <th className="p-3">Status</th>
-              <th className="p-3">Sold Date</th>
-              <th className="p-3">Keys</th>
+              <th className="p-3">MOT</th>
+              <th className="p-3">Transmission</th>
               <th className="p-3">Grade</th>
-              <th className="p-3">Actions</th>
+              <th className="p-3">V5C</th>
+              <th className="p-3">Keys</th>
+              <th className="p-3">Sold Date</th>
+              <th className="p-3">Action</th>
             </tr>
           </thead>
 
@@ -234,10 +178,7 @@ export default function VehiclesPage() {
                       expired ? "bg-red-600" : "bg-green-600"
                     }`}
                   >
-                    {formatDate(v.mot)}{" "}
-                    {expired
-                      ? "(Expired)"
-                      : `(${diffDays} days left)`}
+                    {formatDate(v.mot)}
                   </span>
                 );
               }
@@ -247,33 +188,25 @@ export default function VehiclesPage() {
                   <td className="p-3">{v.make}</td>
                   <td className="p-3">{v.model}</td>
                   <td className="p-3">{v.reg}</td>
-                  <td className="p-3">{motDisplay}</td>
-                  <td className="p-3 font-bold text-green-600">
-                    £{v.profit}
-                  </td>
+                  <td className="p-3">{v.mileage}</td>
+                  <td className="p-3">£{v.purchase_price}</td>
+                  <td className="p-3">£{v.cap_clean_price}</td>
+                  <td className="p-3">£{v.cap_live_price}</td>
                   <td className="p-3">{v.status}</td>
+                  <td className="p-3">{motDisplay}</td>
+                  <td className="p-3">{v.transmission}</td>
+                  <td className="p-3">{v.grade}</td>
+                  <td className="p-3">{v.v5c_status}</td>
+                  <td className="p-3">{v.keys_count}</td>
                   <td className="p-3">
                     {v.sold_date ? formatDate(v.sold_date) : "-"}
                   </td>
-                  <td className="p-3">{v.keys_count}</td>
-                  <td className="p-3">{v.grade}</td>
-                  <td className="p-3 flex gap-2">
+                  <td className="p-3">
                     <button
                       onClick={() => toggleStatus(v.id, v.status)}
                       className="bg-gray-800 text-white px-2 py-1 rounded text-xs"
                     >
                       Toggle
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setEditingVehicle(v);
-                        setFormData(v);
-                        setShowForm(true);
-                      }}
-                      className="bg-yellow-500 text-white px-2 py-1 rounded text-xs"
-                    >
-                      Edit
                     </button>
                   </td>
                 </tr>
