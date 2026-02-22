@@ -67,7 +67,7 @@ export default function VehiclesPage() {
   const markSold = async (id: string) => {
     await supabase
       .from("vehicles")
-      .update({ status: "Sold" })
+      .update({ status: "In Stock" })
       .eq("id", id);
 
     fetchVehicles();
@@ -137,14 +137,21 @@ export default function VehiclesPage() {
                     </div>
                   </div>
 
-                  {vehicle.status === "In Stock" && (
-                    <button
-                      onClick={() => markSold(vehicle.id)}
-                      className="bg-blue-600 text-white px-3 py-1 rounded-lg"
-                    >
-                      Mark Sold
-                    </button>
-                  )}
+                 {vehicle.status === "In Stock" ? (
+  <button
+    onClick={() => markSold(vehicle.id)}
+    className="bg-blue-600 text-white px-3 py-1 rounded-lg"
+  >
+    Mark Sold
+  </button>
+) : (
+  <button
+    onClick={() => markUnsold(vehicle.id)}
+    className="bg-yellow-600 text-white px-3 py-1 rounded-lg"
+  >
+    Mark In Stock
+  </button>
+)}
                 </div>
               </li>
             ))}
