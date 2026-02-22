@@ -16,7 +16,7 @@ export default function VehiclesPage() {
     repairs: "",
   });
 
-  // LOAD VEHICLES FROM SUPABASE
+  // LOAD VEHICLES
   const fetchVehicles = async () => {
     const { data, error } = await supabase
       .from("vehicles")
@@ -32,6 +32,7 @@ export default function VehiclesPage() {
     fetchVehicles();
   }, []);
 
+  // ADD VEHICLE
   const handleAddVehicle = async () => {
     const purchase = Number(formData.purchase_price);
     const sale = Number(formData.sale_price);
@@ -41,7 +42,9 @@ export default function VehiclesPage() {
 
     const { error } = await supabase.from("vehicles").insert([
       {
-        ...formData,
+        make: formData.make,
+        model: formData.model,
+        reg: formData.reg,
         purchase_price: purchase,
         sale_price: sale,
         repairs: repairs,
@@ -64,7 +67,18 @@ export default function VehiclesPage() {
     }
   };
 
+  // MARK SOLD
   const markSold = async (id: string) => {
+    await supabase
+      .from("vehicles")
+      .update({ status: "Sold" })
+      .eq("id", id);
+
+    fetchVehicles();
+  };
+
+  // MARK BACK TO STOCK
+  const markUnsold = async (id: string) => {
     await supabase
       .from("vehicles")
       .update({ status: "In Stock" })
@@ -119,10 +133,12 @@ export default function VehiclesPage() {
                     <div className="font-semibold">
                       {vehicle.make} {vehicle.model} ({vehicle.reg})
                     </div>
+
                     <div className="text-sm text-gray-600">
                       Purchase: £{vehicle.purchase_price} | Repairs: £
                       {vehicle.repairs} | Sale: £{vehicle.sale_price}
                     </div>
+
                     <div
                       className={`mt-2 font-bold ${
                         vehicle.profit >= 0
@@ -132,26 +148,27 @@ export default function VehiclesPage() {
                     >
                       Profit: £{vehicle.profit}
                     </div>
+
                     <div className="mt-1 text-sm">
                       Status: {vehicle.status}
                     </div>
                   </div>
 
-                 {vehicle.status === "In Stock" ? (
-  <button
-    onClick={() => markSold(vehicle.id)}
-    className="bg-blue-600 text-white px-3 py-1 rounded-lg"
-  >
-    Mark Sold
-  </button>
-) : (
-  <button
-    onClick={() => markUnsold(vehicle.id)}
-    className="bg-yellow-600 text-white px-3 py-1 rounded-lg"
-  >
-    Mark In Stock
-  </button>
-)}
+                  {vehicle.status === "In Stock" ? (
+                    <button
+                      onClick={() => markSold(vehicle.id)}
+                      className="bg-blue-600 text-white px-3 py-1 rounded-lg"
+                    >
+                      Mark Sold
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => markUnsold(vehicle.id)}
+                      className="bg-yellow-600 text-white px-3 py-1 rounded-lg"
+                    >
+                      Mark In Stock
+                    </button>
+                  )}
                 </div>
               </li>
             ))}
