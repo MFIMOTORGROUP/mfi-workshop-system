@@ -7,6 +7,9 @@ export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
 
+  const [filterMake, setFilterMake] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+
   const [formData, setFormData] = useState({
     make: "",
     model: "",
@@ -16,12 +19,21 @@ export default function VehiclesPage() {
     repairs: "",
   });
 
-  // LOAD VEHICLES
   const fetchVehicles = async () => {
-    const { data, error } = await supabase
+    let query = supabase
       .from("vehicles")
       .select("*")
       .order("created_at", { ascending: false });
+
+    if (filterMake) {
+      query = query.eq("make", filterMake);
+    }
+
+    if (filterStatus) {
+      query = query.eq("status", filterStatus);
+    }
+
+    const { data, error } = await query;
 
     if (!error && data) {
       setVehicles(data);
@@ -30,14 +42,12 @@ export default function VehiclesPage() {
 
   useEffect(() => {
     fetchVehicles();
-  }, []);
+  }, [filterMake, filterStatus]);
 
-  // ADD VEHICLE
   const handleAddVehicle = async () => {
     const purchase = Number(formData.purchase_price);
     const sale = Number(formData.sale_price);
     const repairs = Number(formData.repairs);
-
     const profit = sale - (purchase + repairs);
 
     const { error } = await supabase.from("vehicles").insert([
@@ -67,21 +77,13 @@ export default function VehiclesPage() {
     }
   };
 
-  // MARK SOLD
-  const markSold = async (id: string) => {
+  const toggleStatus = async (id: string, currentStatus: string) => {
+    const newStatus =
+      currentStatus === "Sold" ? "In Stock" : "Sold";
+
     await supabase
       .from("vehicles")
-      .update({ status: "Sold" })
-      .eq("id", id);
-
-    fetchVehicles();
-  };
-
-  // MARK BACK TO STOCK
-  const markUnsold = async (id: string) => {
-    await supabase
-      .from("vehicles")
-      .update({ status: "In Stock" })
+      .update({ status: newStatus })
       .eq("id", id);
 
     fetchVehicles();
@@ -90,6 +92,36 @@ export default function VehiclesPage() {
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Vehicle Stock</h1>
+
+      {/* FILTER SECTION */}
+      <div className="bg-white p-4 rounded-xl shadow mb-6 flex gap-4">
+        <input
+          placeholder="Filter by Make (e.g. Vauxhall)"
+          value={filterMake}
+          onChange={(e) => setFilterMake(e.target.value)}
+          className="border p-2 rounded"
+        />
+
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="">All Status</option>
+          <option value="In Stock">In Stock</option>
+          <option value="Sold">Sold</option>
+        </select>
+
+        <button
+          onClick={() => {
+            setFilterMake("");
+            setFilterStatus("");
+          }}
+          className="bg-gray-300 px-4 py-2 rounded"
+        >
+          Clear Filters
+        </button>
+      </div>
 
       <button
         onClick={() => setShowForm(!showForm)}
@@ -154,21 +186,16 @@ export default function VehiclesPage() {
                     </div>
                   </div>
 
-                  {vehicle.status === "In Stock" ? (
-                    <button
-                      onClick={() => markSold(vehicle.id)}
-                      className="bg-blue-600 text-white px-3 py-1 rounded-lg"
-                    >
-                      Mark Sold
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => markUnsold(vehicle.id)}
-                      className="bg-yellow-600 text-white px-3 py-1 rounded-lg"
-                    >
-                      Mark In Stock
-                    </button>
-                  )}
+                  <button
+                    onClick={() =>
+                      toggleStatus(vehicle.id, vehicle.status)
+                    }
+                    className="bg-blue-600 text-white px-3 py-1 rounded-lg"
+                  >
+                    {vehicle.status === "Sold"
+                      ? "Mark In Stock"
+                      : "Mark Sold"}
+                  </button>
                 </div>
               </li>
             ))}
