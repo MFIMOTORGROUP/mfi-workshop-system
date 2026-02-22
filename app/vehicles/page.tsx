@@ -32,7 +32,15 @@ export default function VehiclesPage() {
 
   const toggleStatus = async (id: string, currentStatus: string) => {
     const newStatus = currentStatus === "Sold" ? "In Stock" : "Sold";
-    await supabase.from("vehicles").update({ status: newStatus }).eq("id", id);
+
+    await supabase
+      .from("vehicles")
+      .update({
+        status: newStatus,
+        sold_date: newStatus === "Sold" ? new Date().toISOString().split("T")[0] : null,
+      })
+      .eq("id", id);
+
     fetchVehicles();
   };
 
@@ -53,6 +61,10 @@ export default function VehiclesPage() {
     link.href = URL.createObjectURL(blob);
     link.download = "vehicle_stock.csv";
     link.click();
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-GB");
   };
 
   return (
@@ -104,10 +116,12 @@ export default function VehiclesPage() {
               <th className="p-3 text-left">Make</th>
               <th className="p-3 text-left">Model</th>
               <th className="p-3 text-left">Reg</th>
+              <th className="p-3 text-left">MOT</th>
               <th className="p-3 text-left">Purchase</th>
               <th className="p-3 text-left">Sale</th>
               <th className="p-3 text-left">Profit</th>
               <th className="p-3 text-left">Status</th>
+              <th className="p-3 text-left">Sold Date</th>
               <th className="p-3 text-left">Transmission</th>
               <th className="p-3 text-left">Keys</th>
               <th className="p-3 text-left">Grade</th>
@@ -116,52 +130,84 @@ export default function VehiclesPage() {
           </thead>
 
           <tbody>
-            {vehicles.map((vehicle) => (
-              <tr key={vehicle.id} className="border-t">
-                <td className="p-3">{vehicle.make}</td>
-                <td className="p-3">{vehicle.model}</td>
-                <td className="p-3">{vehicle.reg}</td>
-                <td className="p-3">£{vehicle.purchase_price}</td>
-                <td className="p-3">£{vehicle.sale_price}</td>
+            {vehicles.map((vehicle) => {
+              let motContent = "-";
 
-                <td
-                  className={`p-3 font-bold ${
-                    vehicle.profit >= 0
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  £{vehicle.profit}
-                </td>
+              if (vehicle.mot) {
+                const today = new Date();
+                const motDate = new Date(vehicle.mot);
+                const diffTime = motDate.getTime() - today.getTime();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const isExpired = diffDays < 0;
 
-                <td className="p-3">
+                motContent = (
                   <span
                     className={`px-2 py-1 rounded text-white text-xs ${
-                      vehicle.status === "Sold"
-                        ? "bg-blue-600"
-                        : "bg-green-600"
+                      isExpired ? "bg-red-600" : "bg-green-600"
                     }`}
                   >
-                    {vehicle.status}
+                    {formatDate(vehicle.mot)}{" "}
+                    {isExpired
+                      ? "(Expired)"
+                      : `(${diffDays} days left)`}
                   </span>
-                </td>
+                );
+              }
 
-                <td className="p-3">{vehicle.transmission}</td>
-                <td className="p-3">{vehicle.key}</td>
-                <td className="p-3">{vehicle.grade}</td>
+              return (
+                <tr key={vehicle.id} className="border-t">
+                  <td className="p-3">{vehicle.make}</td>
+                  <td className="p-3">{vehicle.model}</td>
+                  <td className="p-3">{vehicle.reg}</td>
+                  <td className="p-3">{motContent}</td>
+                  <td className="p-3">£{vehicle.purchase_price}</td>
+                  <td className="p-3">£{vehicle.sale_price}</td>
 
-                <td className="p-3">
-                  <button
-                    onClick={() =>
-                      toggleStatus(vehicle.id, vehicle.status)
-                    }
-                    className="bg-gray-800 text-white px-3 py-1 rounded text-xs"
+                  <td
+                    className={`p-3 font-bold ${
+                      vehicle.profit >= 0
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
                   >
-                    Toggle
-                  </button>
-                </td>
-              </tr>
-            ))}
+                    £{vehicle.profit}
+                  </td>
+
+                  <td className="p-3">
+                    <span
+                      className={`px-2 py-1 rounded text-white text-xs ${
+                        vehicle.status === "Sold"
+                          ? "bg-blue-600"
+                          : "bg-green-600"
+                      }`}
+                    >
+                      {vehicle.status}
+                    </span>
+                  </td>
+
+                  <td className="p-3">
+                    {vehicle.sold_date
+                      ? formatDate(vehicle.sold_date)
+                      : "-"}
+                  </td>
+
+                  <td className="p-3">{vehicle.transmission}</td>
+                  <td className="p-3">{vehicle.key}</td>
+                  <td className="p-3">{vehicle.grade}</td>
+
+                  <td className="p-3">
+                    <button
+                      onClick={() =>
+                        toggleStatus(vehicle.id, vehicle.status)
+                      }
+                      className="bg-gray-800 text-white px-3 py-1 rounded text-xs"
+                    >
+                      Toggle
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 
