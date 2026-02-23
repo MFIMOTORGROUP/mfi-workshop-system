@@ -5,28 +5,95 @@ import { supabase } from "../lib/supabase";
 
 export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<any[]>([]);
+  const [filteredVehicles, setFilteredVehicles] = useState<any[]>([]);
   const [filterMake, setFilterMake] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [editingVehicle, setEditingVehicle] = useState<any>(null);
 
+  const emptyForm = {
+    make: "",
+    model: "",
+    reg: "",
+    mileage: "",
+    purchase_price: "",
+    sale_price: "",
+    repairs: "",
+    cap_clean_price: "",
+    cap_live_price: "",
+    mot: "",
+    transmission: "",
+    grade: "",
+    v5c_status: "",
+    keys_count: "",
+  };
+
+  const [formData, setFormData] = useState(emptyForm);
+
+  // FETCH ONCE
   const fetchVehicles = async () => {
-    let query = supabase
+    const { data } = await supabase
       .from("vehicles")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (filterMake) query = query.ilike("make", `%${filterMake}%`);
-    if (filterStatus) query = query.eq("status", filterStatus);
-
-    const { data } = await query;
-    if (data) setVehicles(data);
+    if (data) {
+      setVehicles(data);
+      setFilteredVehicles(data);
+    }
   };
 
   useEffect(() => {
     fetchVehicles();
-  }, [filterMake, filterStatus]);
+  }, []);
 
-  const formatDate = (date: string) =>
-    new Date(date).toLocaleDateString("en-GB");
+  // LOCAL FILTER (NO DB CALL)
+  useEffect(() => {
+    let temp = [...vehicles];
+
+    if (filterMake) {
+      temp = temp.filter((v) =>
+        v.make?.toLowerCase().includes(filterMake.toLowerCase())
+      );
+    }
+
+    if (filterStatus) {
+      temp = temp.filter((v) => v.status === filterStatus);
+    }
+
+    setFilteredVehicles(temp);
+  }, [filterMake, filterStatus, vehicles]);
+
+  const handleSave = async () => {
+    const purchase = Number(formData.purchase_price);
+    const sale = Number(formData.sale_price);
+    const repairs = Number(formData.repairs);
+    const profit = sale - (purchase + repairs);
+
+    const payload = {
+      ...formData,
+      purchase_price: purchase,
+      sale_price: sale,
+      repairs,
+      profit,
+    };
+
+    if (editingVehicle) {
+      await supabase
+        .from("vehicles")
+        .update(payload)
+        .eq("id", editingVehicle.id);
+    } else {
+      await supabase
+        .from("vehicles")
+        .insert([{ ...payload, status: "In Stock" }]);
+    }
+
+    setFormData(emptyForm);
+    setEditingVehicle(null);
+    setShowForm(false);
+    fetchVehicles();
+  };
 
   const toggleStatus = async (id: string, currentStatus: string) => {
     const newStatus = currentStatus === "Sold" ? "In Stock" : "Sold";
@@ -45,9 +112,10 @@ export default function VehiclesPage() {
     fetchVehicles();
   };
 
-  const exportToCSV = () => {
-    if (!vehicles.length) return;
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleDateString("en-GB");
 
+  const exportToCSV = () => {
     const headers = [
       "Make",
       "Model",
@@ -65,7 +133,7 @@ export default function VehiclesPage() {
       "Sold Date",
     ];
 
-    const rows = vehicles.map((v) => [
+    const rows = filteredVehicles.map((v) => [
       v.make,
       v.model,
       v.reg,
@@ -82,13 +150,12 @@ export default function VehiclesPage() {
       v.sold_date,
     ]);
 
-    const csvContent =
+    const csv =
       headers.join(",") +
       "\n" +
-      rows.map((r) => r.map((val) => `"${val ?? ""}"`).join(",")).join("\n");
+      rows.map((r) => r.map((x) => `"${x ?? ""}"`).join(",")).join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv" });
-
+    const blob = new Blob([csv], { type: "text/csv" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = "vehicle_stock.csv";
@@ -99,7 +166,7 @@ export default function VehiclesPage() {
     <div>
       <h1 className="text-3xl font-bold mb-6">Vehicle Stock</h1>
 
-      {/* Filters */}
+      {/* Controls */}
       <div className="flex gap-4 mb-6">
         <input
           placeholder="Filter by Make"
@@ -113,20 +180,10 @@ export default function VehiclesPage() {
           onChange={(e) => setFilterStatus(e.target.value)}
           className="border p-2 rounded"
         >
-          <option value="">All Status</option>
+          <option value="">All</option>
           <option value="In Stock">In Stock</option>
           <option value="Sold">Sold</option>
         </select>
-
-        <button
-          onClick={() => {
-            setFilterMake("");
-            setFilterStatus("");
-          }}
-          className="bg-gray-300 px-4 py-2 rounded"
-        >
-          Clear
-        </button>
 
         <button
           onClick={exportToCSV}
@@ -134,47 +191,80 @@ export default function VehiclesPage() {
         >
           Export Excel
         </button>
+
+        <button
+          onClick={() => {
+            setShowForm(!showForm);
+            setEditingVehicle(null);
+            setFormData(emptyForm);
+          }}
+          className="bg-black text-white px-4 py-2 rounded"
+        >
+          + Add Vehicle
+        </button>
       </div>
 
-      {/* Table */}
+      {/* ADD / EDIT FORM */}
+      {showForm && (
+        <div className="grid grid-cols-3 gap-4 bg-white p-6 mb-6 rounded shadow">
+          {Object.keys(formData).map((field) => (
+            <input
+              key={field}
+              type={field === "mot" ? "date" : "text"}
+              placeholder={field.replaceAll("_", " ")}
+              value={(formData as any)[field]}
+              onChange={(e) =>
+                setFormData({ ...formData, [field]: e.target.value })
+              }
+              className="border p-2 rounded"
+            />
+          ))}
+
+          <button
+            onClick={handleSave}
+            className="col-span-3 bg-blue-600 text-white py-2 rounded"
+          >
+            {editingVehicle ? "Update Vehicle" : "Save Vehicle"}
+          </button>
+        </div>
+      )}
+
+      {/* TABLE */}
       <div className="overflow-x-auto bg-white rounded shadow">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-100">
             <tr>
-              <th className="p-3">Make</th>
-              <th className="p-3">Model</th>
-              <th className="p-3">Reg</th>
-              <th className="p-3">Mileage</th>
-              <th className="p-3">Purchase</th>
-              <th className="p-3">CAP Clean</th>
-              <th className="p-3">CAP Live</th>
-              <th className="p-3">Status</th>
-              <th className="p-3">MOT</th>
-              <th className="p-3">Transmission</th>
-              <th className="p-3">Grade</th>
-              <th className="p-3">V5C</th>
-              <th className="p-3">Keys</th>
-              <th className="p-3">Sold Date</th>
-              <th className="p-3">Action</th>
+              <th>Make</th>
+              <th>Model</th>
+              <th>Reg</th>
+              <th>Mileage</th>
+              <th>Purchase</th>
+              <th>CAP Clean</th>
+              <th>CAP Live</th>
+              <th>Status</th>
+              <th>MOT</th>
+              <th>Transmission</th>
+              <th>Grade</th>
+              <th>V5C</th>
+              <th>Keys</th>
+              <th>Sold Date</th>
+              <th>Edit</th>
+              <th>Toggle</th>
             </tr>
           </thead>
 
           <tbody>
-            {vehicles.map((v) => {
+            {filteredVehicles.map((v) => {
               let motDisplay: React.ReactNode = "-";
 
               if (v.mot) {
                 const today = new Date();
                 const motDate = new Date(v.mot);
-                const diffDays = Math.ceil(
-                  (motDate.getTime() - today.getTime()) /
-                    (1000 * 60 * 60 * 24)
-                );
-                const expired = diffDays < 0;
+                const expired = motDate < today;
 
                 motDisplay = (
                   <span
-                    className={`px-2 py-1 rounded text-white text-xs ${
+                    className={`px-2 py-1 text-xs text-white rounded ${
                       expired ? "bg-red-600" : "bg-green-600"
                     }`}
                   >
@@ -185,23 +275,35 @@ export default function VehiclesPage() {
 
               return (
                 <tr key={v.id} className="border-t">
-                  <td className="p-3">{v.make}</td>
-                  <td className="p-3">{v.model}</td>
-                  <td className="p-3">{v.reg}</td>
-                  <td className="p-3">{v.mileage}</td>
-                  <td className="p-3">£{v.purchase_price}</td>
-                  <td className="p-3">£{v.cap_clean_price}</td>
-                  <td className="p-3">£{v.cap_live_price}</td>
-                  <td className="p-3">{v.status}</td>
-                  <td className="p-3">{motDisplay}</td>
-                  <td className="p-3">{v.transmission}</td>
-                  <td className="p-3">{v.grade}</td>
-                  <td className="p-3">{v.v5c_status}</td>
-                  <td className="p-3">{v.keys_count}</td>
-                  <td className="p-3">
+                  <td>{v.make}</td>
+                  <td>{v.model}</td>
+                  <td>{v.reg}</td>
+                  <td>{v.mileage}</td>
+                  <td>£{v.purchase_price}</td>
+                  <td>£{v.cap_clean_price}</td>
+                  <td>£{v.cap_live_price}</td>
+                  <td>{v.status}</td>
+                  <td>{motDisplay}</td>
+                  <td>{v.transmission}</td>
+                  <td>{v.grade}</td>
+                  <td>{v.v5c_status}</td>
+                  <td>{v.keys_count}</td>
+                  <td>
                     {v.sold_date ? formatDate(v.sold_date) : "-"}
                   </td>
-                  <td className="p-3">
+                  <td>
+                    <button
+                      onClick={() => {
+                        setEditingVehicle(v);
+                        setFormData(v);
+                        setShowForm(true);
+                      }}
+                      className="bg-yellow-500 text-white px-2 py-1 rounded text-xs"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                  <td>
                     <button
                       onClick={() => toggleStatus(v.id, v.status)}
                       className="bg-gray-800 text-white px-2 py-1 rounded text-xs"
