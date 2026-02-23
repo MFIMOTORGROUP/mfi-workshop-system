@@ -169,24 +169,22 @@ export default function VehiclesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 max-w-[1500px] mx-auto">
-      <h1 className="text-2xl font-semibold mb-6">
-        Vehicle Stock
-      </h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-6">Vehicle Stock</h1>
 
       {/* Controls */}
-      <div className="flex flex-wrap gap-4 mb-8 items-center">
+      <div className="flex gap-4 mb-6 flex-wrap">
         <input
           placeholder="Filter by Make"
           value={filterMake}
           onChange={(e) => setFilterMake(e.target.value)}
-          className="border bg-white px-4 py-2 rounded-lg shadow-sm"
+          className="border p-2 rounded"
         />
 
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="border bg-white px-4 py-2 rounded-lg shadow-sm"
+          className="border p-2 rounded"
         >
           <option value="">All</option>
           <option value="In Stock">In Stock</option>
@@ -195,7 +193,7 @@ export default function VehiclesPage() {
 
         <button
           onClick={exportToCSV}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg shadow-md transition"
+          className="bg-green-600 text-white px-4 py-2 rounded"
         >
           Export Excel
         </button>
@@ -206,7 +204,7 @@ export default function VehiclesPage() {
             setEditingVehicle(null);
             setFormData(emptyForm);
           }}
-          className="bg-black hover:bg-gray-800 text-white px-5 py-2 rounded-lg shadow-md transition"
+          className="bg-black text-white px-4 py-2 rounded"
         >
           + Add Vehicle
         </button>
@@ -214,7 +212,7 @@ export default function VehiclesPage() {
 
       {/* FORM */}
       {showForm && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 bg-white p-6 mb-6 rounded-xl shadow">
+        <div className="grid grid-cols-3 gap-4 bg-white p-6 mb-6 rounded shadow">
           {Object.keys(formData).map((field) => (
             <input
               key={field}
@@ -224,13 +222,13 @@ export default function VehiclesPage() {
               onChange={(e) =>
                 setFormData({ ...formData, [field]: e.target.value })
               }
-              className="border px-4 py-2 rounded-lg"
+              className="border p-2 rounded"
             />
           ))}
 
           <button
             onClick={handleSave}
-            className="col-span-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg shadow-md transition"
+            className="col-span-3 bg-blue-600 text-white py-2 rounded"
           >
             {editingVehicle ? "Update Vehicle" : "Save Vehicle"}
           </button>
@@ -238,19 +236,28 @@ export default function VehiclesPage() {
       )}
 
       {/* TABLE */}
-      <div className="bg-white rounded-2xl shadow-xl overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-600">
+      <div className="overflow-x-auto bg-white rounded shadow">
+        <table className="min-w-full text-sm">
+          <thead className="bg-gray-100">
             <tr>
-              {[
-                "Make","Model","Reg","Mileage","Purchase","CAP Clean","CAP Live",
-                "Status","MOT","Transmission","Grade","V5C","Keys",
-                "Sold Date","Days","CAP Check","Edit","Toggle"
-              ].map((h) => (
-                <th key={h} className="px-4 py-2 text-left whitespace-nowrap">
-                  {h}
-                </th>
-              ))}
+              <th>Make</th>
+              <th>Model</th>
+              <th>Reg</th>
+              <th>Mileage</th>
+              <th>Purchase</th>
+              <th>CAP Clean</th>
+              <th>CAP Live</th>
+              <th>Status</th>
+              <th>MOT</th>
+              <th>Transmission</th>
+              <th>Grade</th>
+              <th>V5C</th>
+              <th>Keys</th>
+              <th>Sold Date</th>
+              <th>Days</th>
+              <th>CAP Check</th>
+              <th>Edit</th>
+              <th>Toggle</th>
             </tr>
           </thead>
 
@@ -284,25 +291,24 @@ export default function VehiclesPage() {
               }
 
               return (
-                <tr key={v.id} className="border-t hover:bg-gray-50 transition">
-                  <td className="px-4 py-2 font-semibold">{v.make}</td>
-                  <td className="px-4 py-2">{v.model}</td>
-                  <td className="px-4 py-2 font-bold">{v.reg}</td>
-                  <td className="px-4 py-2">{v.mileage}</td>
-                  <td className="px-4 py-2">£{v.purchase_price}</td>
-                  <td className="px-4 py-2">£{v.cap_clean_price}</td>
-                  <td className="px-4 py-2">£{v.cap_live_price}</td>
-                  <td className="px-4 py-2">{v.status}</td>
-                  <td className="px-4 py-2">{motDisplay}</td>
-                  <td className="px-4 py-2">{v.transmission}</td>
-                  <td className="px-4 py-2">{v.grade}</td>
-                  <td className="px-4 py-2">{v.v5c_status}</td>
-                  <td className="px-4 py-2">{v.keys_count}</td>
-                  <td className="px-4 py-2">
+                <tr key={v.id} className="border-t hover:bg-gray-50">
+                  <td>{v.make}</td>
+                  <td>{v.model}</td>
+                  <td>{v.reg}</td>
+                  <td>{v.mileage}</td>
+                  <td>£{v.purchase_price}</td>
+                  <td>£{v.cap_clean_price}</td>
+                  <td>£{v.cap_live_price}</td>
+                  <td>{v.status}</td>
+                  <td>{motDisplay}</td>
+                  <td>{v.transmission}</td>
+                  <td>{v.grade}</td>
+                  <td>{v.v5c_status}</td>
+                  <td>{v.keys_count}</td>
+                  <td>
                     {v.sold_date ? formatDate(v.sold_date) : "-"}
                   </td>
-
-                  <td className="px-4 py-2">
+                  <td>
                     <span
                       className={`px-2 py-1 rounded text-xs text-white ${
                         days <= 30
@@ -315,8 +321,7 @@ export default function VehiclesPage() {
                       {days} days
                     </span>
                   </td>
-
-                  <td className="px-4 py-2">
+                  <td>
                     <span
                       className={`px-2 py-1 rounded text-xs text-white ${
                         capWarning === "OK"
@@ -329,24 +334,22 @@ export default function VehiclesPage() {
                       {capWarning}
                     </span>
                   </td>
-
-                  <td className="px-4 py-2">
+                  <td>
                     <button
                       onClick={() => {
                         setEditingVehicle(v);
                         setFormData(v);
                         setShowForm(true);
                       }}
-                      className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded-md text-xs"
+                      className="bg-yellow-500 text-white px-2 py-1 rounded text-xs"
                     >
                       Edit
                     </button>
                   </td>
-
-                  <td className="px-4 py-2">
+                  <td>
                     <button
                       onClick={() => toggleStatus(v.id, v.status)}
-                      className="bg-gray-800 hover:bg-black text-white px-3 py-1 rounded-md text-xs"
+                      className="bg-gray-800 text-white px-2 py-1 rounded text-xs"
                     >
                       Toggle
                     </button>
