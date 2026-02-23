@@ -114,7 +114,14 @@ export default function VehiclesPage() {
 
   const formatDate = (date: string) =>
     new Date(date).toLocaleDateString("en-GB");
-
+const calculateDaysInStock = (createdAt: string) => {
+  const created = new Date(createdAt);
+  const today = new Date();
+  const diff = Math.floor(
+    (today.getTime() - created.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  return diff;
+};
   const exportToCSV = () => {
     const headers = [
       "Make",
@@ -233,88 +240,152 @@ export default function VehiclesPage() {
       <div className="overflow-x-auto bg-white rounded shadow">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-100">
-            <tr>
-              <th>Make</th>
-              <th>Model</th>
-              <th>Reg</th>
-              <th>Mileage</th>
-              <th>Purchase</th>
-              <th>CAP Clean</th>
-              <th>CAP Live</th>
-              <th>Status</th>
-              <th>MOT</th>
-              <th>Transmission</th>
-              <th>Grade</th>
-              <th>V5C</th>
-              <th>Keys</th>
-              <th>Sold Date</th>
-              <th>Edit</th>
-              <th>Toggle</th>
-            </tr>
-          </thead>
+  <tr>
+    <th>Make</th>
+    <th>Model</th>
+    <th>Reg</th>
+    <th>Mileage</th>
+    <th>Purchase</th>
+    <th>CAP Clean</th>
+    <th>CAP Live</th>
+    <th>Status</th>
+    <th>MOT</th>
+    <th>Transmission</th>
+    <th>Grade</th>
+    <th>V5C</th>
+    <th>Keys</th>
+    <th>Sold Date</th>
+    <th>Days</th>
+    <th>Margin %</th>
+    <th>CAP Check</th>
+    <th>Edit</th>
+    <th>Toggle</th>
+  </tr>
+</thead>
 
-          <tbody>
-            {filteredVehicles.map((v) => {
-              let motDisplay: React.ReactNode = "-";
+<tbody>
+  {filteredVehicles.map((v) => {
+    const days = calculateDaysInStock(v.created_at);
 
-              if (v.mot) {
-                const today = new Date();
-                const motDate = new Date(v.mot);
-                const expired = motDate < today;
+    const margin =
+      v.purchase_price > 0
+        ? ((v.profit / v.purchase_price) * 100).toFixed(1)
+        : "0";
 
-                motDisplay = (
-                  <span
-                    className={`px-2 py-1 text-xs text-white rounded ${
-                      expired ? "bg-red-600" : "bg-green-600"
-                    }`}
-                  >
-                    {formatDate(v.mot)}
-                  </span>
-                );
-              }
+    const capWarning =
+      v.purchase_price > v.cap_clean_price
+        ? "Over CAP Clean"
+        : v.purchase_price > v.cap_live_price
+        ? "Above CAP Live"
+        : "OK";
 
-              return (
-                <tr key={v.id} className="border-t">
-                  <td>{v.make}</td>
-                  <td>{v.model}</td>
-                  <td>{v.reg}</td>
-                  <td>{v.mileage}</td>
-                  <td>£{v.purchase_price}</td>
-                  <td>£{v.cap_clean_price}</td>
-                  <td>£{v.cap_live_price}</td>
-                  <td>{v.status}</td>
-                  <td>{motDisplay}</td>
-                  <td>{v.transmission}</td>
-                  <td>{v.grade}</td>
-                  <td>{v.v5c_status}</td>
-                  <td>{v.keys_count}</td>
-                  <td>
-                    {v.sold_date ? formatDate(v.sold_date) : "-"}
-                  </td>
-                  <td>
-                    <button
-                      onClick={() => {
-                        setEditingVehicle(v);
-                        setFormData(v);
-                        setShowForm(true);
-                      }}
-                      className="bg-yellow-500 text-white px-2 py-1 rounded text-xs"
-                    >
-                      Edit
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      onClick={() => toggleStatus(v.id, v.status)}
-                      className="bg-gray-800 text-white px-2 py-1 rounded text-xs"
-                    >
-                      Toggle
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
+    let motDisplay: React.ReactNode = "-";
+
+    if (v.mot) {
+      const today = new Date();
+      const motDate = new Date(v.mot);
+      const expired = motDate < today;
+
+      motDisplay = (
+        <span
+          className={`px-2 py-1 text-xs text-white rounded ${
+            expired ? "bg-red-600" : "bg-green-600"
+          }`}
+        >
+          {formatDate(v.mot)}
+        </span>
+      );
+    }
+
+    return (
+      <tr key={v.id} className="border-t">
+        <td>{v.make}</td>
+        <td>{v.model}</td>
+        <td>{v.reg}</td>
+        <td>{v.mileage}</td>
+        <td>£{v.purchase_price}</td>
+        <td>£{v.cap_clean_price}</td>
+        <td>£{v.cap_live_price}</td>
+        <td>{v.status}</td>
+        <td>{motDisplay}</td>
+        <td>{v.transmission}</td>
+        <td>{v.grade}</td>
+        <td>{v.v5c_status}</td>
+        <td>{v.keys_count}</td>
+        <td>
+          {v.sold_date ? formatDate(v.sold_date) : "-"}
+        </td>
+
+        {/* DAYS */}
+        <td>
+          <span
+            className={`px-2 py-1 rounded text-xs text-white ${
+              days <= 30
+                ? "bg-green-600"
+                : days <= 60
+                ? "bg-yellow-500"
+                : "bg-red-600"
+            }`}
+          >
+            {days} days
+          </span>
+        </td>
+
+        {/* MARGIN */}
+        <td>
+          <span
+            className={`px-2 py-1 rounded text-xs text-white ${
+              Number(margin) >= 15
+                ? "bg-green-600"
+                : Number(margin) >= 8
+                ? "bg-yellow-500"
+                : "bg-red-600"
+            }`}
+          >
+            {margin}%
+          </span>
+        </td>
+
+        {/* CAP CHECK */}
+        <td>
+          <span
+            className={`px-2 py-1 rounded text-xs text-white ${
+              capWarning === "OK"
+                ? "bg-green-600"
+                : capWarning === "Above CAP Live"
+                ? "bg-yellow-500"
+                : "bg-red-600"
+            }`}
+          >
+            {capWarning}
+          </span>
+        </td>
+
+        <td>
+          <button
+            onClick={() => {
+              setEditingVehicle(v);
+              setFormData(v);
+              setShowForm(true);
+            }}
+            className="bg-yellow-500 text-white px-2 py-1 rounded text-xs"
+          >
+            Edit
+          </button>
+        </td>
+
+        <td>
+          <button
+            onClick={() => toggleStatus(v.id, v.status)}
+            className="bg-gray-800 text-white px-2 py-1 rounded text-xs"
+          >
+            Toggle
+          </button>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
         </table>
       </div>
     </div>
