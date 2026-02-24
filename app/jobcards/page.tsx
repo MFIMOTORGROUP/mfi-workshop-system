@@ -1,119 +1,189 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
 
 export default function JobCardsPage() {
-  const [jobs, setJobs] = useState<any[]>([]);
-  const [showForm, setShowForm] = useState(false);
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [jobCards, setJobCards] = useState<any[]>([]);
+  const [selectedVehicle, setSelectedVehicle] = useState("");
+  const [description, setDescription] = useState("");
+  const [labour, setLabour] = useState("");
+  const [parts, setParts] = useState("");
+  const [status, setStatus] = useState("Pending");
 
-  const [formData, setFormData] = useState({
-    customer: "",
-    reg: "",
-    description: "",
-    labour: "",
-    parts: "",
-    charge: "",
-  });
+  const labourNum = Number(labour) || 0;
+  const partsNum = Number(parts) || 0;
+  const total = labourNum + partsNum;
 
-  // Load saved jobs
+  const fetchVehicles = async () => {
+    const { data } = await supabase
+      .from("vehicles")
+      .select("id, make, model, reg");
+
+    if (data) setVehicles(data);
+  };
+
+  const fetchJobCards = async () => {
+    const { data } = await supabase
+      .from("job_cards")
+      .select("*, vehicles(make, model, reg)")
+      .order("created_at", { ascending: false });
+
+    if (data) setJobCards(data);
+  };
+
   useEffect(() => {
-    const saved = localStorage.getItem("mfiJobs");
-    if (saved) {
-      setJobs(JSON.parse(saved));
-    }
+    fetchVehicles();
+    fetchJobCards();
   }, []);
 
-  // Save jobs
-  useEffect(() => {
-    localStorage.setItem("mfiJobs", JSON.stringify(jobs));
-  }, [jobs]);
+  const handleSave = async () => {
+    if (!selectedVehicle) return alert("Select a vehicle");
 
-  const handleAddJob = () => {
-    const labour = Number(formData.labour);
-    const parts = Number(formData.parts);
-    const charge = Number(formData.charge);
-
-    const cost = labour + parts;
-    const profit = charge - cost;
-
-    setJobs([
-      ...jobs,
-      { ...formData, cost, profit, status: "Open" },
+    // Insert job card
+    await supabase.from("job_cards").insert([
+      {
+        vehicle_id: selectedVehicle,
+        description,
+        labour_cost: labourNum,
+        parts_cost: partsNum,
+        total_cost: total,
+        status,
+      },
     ]);
 
-    setFormData({
-      customer: "",
-      reg: "",
-      description: "",
-      labour: "",
-      parts: "",
-      charge: "",
-    });
+    // Get vehicle
+    const { data: vehicle } = await supabase
+      .from("vehicles")
+      .select("*")
+      .eq("id", selectedVehicle)
+      .single();
 
-    setShowForm(false);
+    if (vehicle) {
+      const newRepairs = (vehicle.repairs || 0) + total;
+      const newProfit =
+        (vehicle.sale_price || 0) -
+        ((vehicle.purchase_price || 0) + newRepairs);
+
+      await supabase
+        .from("vehicles")
+        .update({
+          repairs: newRepairs,
+          profit: newProfit,
+        })
+        .eq("id", selectedVehicle);
+    }
+
+    setSelectedVehicle("");
+    setDescription("");
+    setLabour("");
+    setParts("");
+    setStatus("Pending");
+
+    fetchJobCards();
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Job Cards</h1>
+    <div className="px-6 py-6">
+      <h1 className="text-2xl font-semibold mb-8">Job Cards</h1>
 
-      <button
-        onClick={() => setShowForm(!showForm)}
-        className="bg-black text-white px-4 py-2 rounded-lg mb-6"
-      >
-        + New Job Card
-      </button>
+      {/* Form */}
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm mb-8">
+        <div className="grid grid-cols-2 gap-4">
 
-      {showForm && (
-        <div className="bg-white p-6 rounded-xl shadow mb-6 grid grid-cols-2 gap-4">
-          {Object.keys(formData).map((field) => (
-            <input
-              key={field}
-              placeholder={field}
-              value={(formData as any)[field]}
-              onChange={(e) =>
-                setFormData({ ...formData, [field]: e.target.value })
-              }
-              className="border p-2 rounded"
-            />
-          ))}
-
-          <button
-            onClick={handleAddJob}
-            className="col-span-2 mt-2 bg-green-600 text-white px-4 py-2 rounded-lg"
+          <select
+            value={selectedVehicle}
+            onChange={(e) => setSelectedVehicle(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded-md text-sm"
           >
-            Save Job
+            <option value="">Select Vehicle</option>
+            {vehicles.map((v) => (
+              <option key={v.id} value={v.id}>
+                {v.make} {v.model} - {v.reg}
+              </option>
+            ))}
+          </select>
+
+          <input
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded-md text-sm"
+          />
+
+          <input
+            type="number"
+            placeholder="Labour Cost"
+            value={labour}
+            onChange={(e) => setLabour(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded-md text-sm"
+          />
+
+          <input
+            type="number"
+            placeholder="Parts Cost"
+            value={parts}
+            onChange={(e) => setParts(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded-md text-sm"
+          />
+
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded-md text-sm"
+          >
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+
+          <div className="flex items-center text-sm font-medium">
+            Total: £{total}
+          </div>
+        </div>
+
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={handleSave}
+            className="bg-black text-white px-6 py-2 rounded-md text-sm hover:bg-gray-900"
+          >
+            Save Job Card
           </button>
         </div>
-      )}
+      </div>
 
-      <div className="bg-white rounded-xl shadow p-6">
-        {jobs.length === 0 ? (
-          <p className="text-gray-500">No job cards created.</p>
-        ) : (
-          <ul className="space-y-4">
-            {jobs.map((job, index) => (
-              <li key={index} className="border p-4 rounded-lg">
-                <div className="font-semibold">
-                  {job.customer} – {job.reg}
-                </div>
-                <div className="text-sm text-gray-600">
-                  {job.description}
-                </div>
-                <div className="text-sm mt-1">
-                  Labour: £{job.labour} | Parts: £{job.parts} | Charge: £{job.charge}
-                </div>
-                <div
-                  className={`mt-2 font-bold ${
-                    job.profit >= 0 ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  Profit: £{job.profit}
-                </div>
-              </li>
+      {/* Job List */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        <table className="min-w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+            <tr>
+              <th className="px-4 py-3 text-left">Vehicle</th>
+              <th className="px-4 py-3 text-left">Description</th>
+              <th className="px-4 py-3 text-left">Labour</th>
+              <th className="px-4 py-3 text-left">Parts</th>
+              <th className="px-4 py-3 text-left">Total</th>
+              <th className="px-4 py-3 text-left">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {jobCards.map((job) => (
+              <tr
+                key={job.id}
+                className="border-t border-gray-100 hover:bg-gray-50"
+              >
+                <td className="px-4 py-3">
+                  {job.vehicles?.make} {job.vehicles?.model} ({job.vehicles?.reg})
+                </td>
+                <td className="px-4 py-3">{job.description}</td>
+                <td className="px-4 py-3">£{job.labour_cost}</td>
+                <td className="px-4 py-3">£{job.parts_cost}</td>
+                <td className="px-4 py-3 font-medium">£{job.total_cost}</td>
+                <td className="px-4 py-3">{job.status}</td>
+              </tr>
             ))}
-          </ul>
-        )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
