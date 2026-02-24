@@ -278,6 +278,8 @@ const handleDelete = async (id: string) => {
             <th className="px-4 py-3 text-left">Reg</th>
             <th className="px-4 py-3 text-left">Mileage</th>
             <th className="px-4 py-3 text-left">Purchase</th>
+            <th className="px-4 py-3 text-left">Repairs</th>
+            <th className="px-4 py-3 text-left">Profit</th>
             <th className="px-4 py-3 text-left">CAP Clean</th>
             <th className="px-4 py-3 text-left">CAP Live</th>
             <th className="px-4 py-3 text-left">Status</th>
@@ -309,6 +311,19 @@ const handleDelete = async (id: string) => {
                 <td className="px-4 py-3">{v.reg}</td>
                 <td className="px-4 py-3">{v.mileage}</td>
                 <td className="px-4 py-3">£{v.purchase_price}</td>
+                <td>£{v.repairs || 0}</td>
+
+<td>
+  {v.profit >= 0 ? (
+    <span className="text-green-700 font-medium">
+      £{v.profit}
+    </span>
+  ) : (
+    <span className="text-red-600 font-medium">
+      £{v.profit}
+    </span>
+  )}
+</td>
                 <td className="px-4 py-3">£{v.cap_clean_price}</td>
                 <td className="px-4 py-3">£{v.cap_live_price}</td>
                 <td className="px-4 py-3">{v.status}</td>
