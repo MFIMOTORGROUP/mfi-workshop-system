@@ -1,5 +1,6 @@
 import "./globals.css";
 import Link from "next/link";
+
 export default function RootLayout({
   children,
 }: {
@@ -7,41 +8,41 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-gray-100">
-        <div className="flex min-h-screen">
-          {/* Sidebar */}
-          <div className="w-64 bg-black text-white p-6">
-            <h1 className="text-2xl font-bold mb-10">
+      <body className="bg-gray-100 text-gray-900">
+        
+        {/* Premium Top Navbar */}
+        <header className="bg-black text-white shadow-md">
+          <div className="max-w-7xl mx-auto px-8 py-4 flex justify-between items-center">
+            
+            <h1 className="text-xl font-semibold tracking-wide">
               MFI Motor Group
             </h1>
 
-            <ul className="space-y-4">
-        <li>
-  <Link href="/" className="hover:text-gray-300">
-    Dashboard
-  </Link>
-</li>
-              <li>
-  <Link href="/vehicles" className="hover:text-gray-300">
-    Vehicles
-  </Link>
-</li>
-             <li>
-  <Link href="/jobcards" className="hover:text-gray-300">
-    Job Cards
-  </Link>
-</li>
-              <li className="hover:text-gray-300 cursor-pointer">
-                Invoices
-              </li>
-            </ul>
-          </div>
+            <nav className="flex items-center gap-8 text-sm font-medium">
+              <Link href="/" className="hover:text-gray-300 transition">
+                Dashboard
+              </Link>
 
-          {/* Main Content */}
-          <div className="flex-1 p-10">
-            {children}
+              <Link href="/vehicles" className="hover:text-gray-300 transition">
+                Vehicles
+              </Link>
+
+              <Link href="/jobcards" className="hover:text-gray-300 transition">
+                Job Cards
+              </Link>
+
+              <span className="hover:text-gray-300 cursor-pointer transition">
+                Invoices
+              </span>
+            </nav>
           </div>
-        </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-8 py-8">
+          {children}
+        </main>
+
       </body>
     </html>
   );

@@ -109,7 +109,24 @@ export default function VehiclesPage() {
 
     fetchVehicles();
   };
+const handleDelete = async (id: string) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this vehicle?"
+  );
 
+  if (!confirmDelete) return;
+
+  const { error } = await supabase
+    .from("vehicles")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error("Delete failed:", error);
+  } else {
+    fetchVehicles();
+  }
+};
   const formatDate = (date: string) =>
     new Date(date).toLocaleDateString("en-GB");
 
@@ -261,103 +278,106 @@ export default function VehiclesPage() {
             </tr>
           </thead>
 
-          <tbody>
-            {filteredVehicles.map((v) => {
-              const days = calculateDaysInStock(v.created_at);
+<tbody>
+  {filteredVehicles.map((v) => {
+    const days = calculateDaysInStock(v.created_at);
 
-              const capWarning =
-                v.purchase_price > v.cap_clean_price
-                  ? "Over CAP Clean"
-                  : v.purchase_price > v.cap_live_price
-                  ? "Above CAP Live"
-                  : "OK";
+    const capWarning =
+      v.purchase_price > v.cap_clean_price
+        ? "Over CAP Clean"
+        : v.purchase_price > v.cap_live_price
+        ? "Above CAP Live"
+        : "OK";
 
-              let motDisplay: React.ReactNode = "-";
+    let motDisplay: React.ReactNode = "-";
 
-              if (v.mot) {
-                const today = new Date();
-                const motDate = new Date(v.mot);
-                const expired = motDate < today;
+    if (v.mot) {
+      const today = new Date();
+      const motDate = new Date(v.mot);
+      const expired = motDate < today;
 
-                motDisplay = (
-                  <span
-                    className={`px-2 py-1 text-xs text-white rounded ${
-                      expired ? "bg-red-600" : "bg-green-600"
-                    }`}
-                  >
-                    {formatDate(v.mot)}
-                  </span>
-                );
-              }
+      motDisplay = (
+        <span
+          className={`px-2 py-1 text-xs text-white rounded ${
+            expired ? "bg-red-600" : "bg-green-600"
+          }`}
+        >
+          {formatDate(v.mot)}
+        </span>
+      );
+    }
 
-              return (
-                <tr key={v.id} className="border-t hover:bg-gray-50">
-                  <td>{v.make}</td>
-                  <td>{v.model}</td>
-                  <td>{v.reg}</td>
-                  <td>{v.mileage}</td>
-                  <td>£{v.purchase_price}</td>
-                  <td>£{v.cap_clean_price}</td>
-                  <td>£{v.cap_live_price}</td>
-                  <td>{v.status}</td>
-                  <td>{motDisplay}</td>
-                  <td>{v.transmission}</td>
-                  <td>{v.grade}</td>
-                  <td>{v.v5c_status}</td>
-                  <td>{v.keys_count}</td>
-                  <td>
-                    {v.sold_date ? formatDate(v.sold_date) : "-"}
-                  </td>
-                  <td>
-                    <span
-                      className={`px-2 py-1 rounded text-xs text-white ${
-                        days <= 30
-                          ? "bg-green-600"
-                          : days <= 60
-                          ? "bg-yellow-500"
-                          : "bg-red-600"
-                      }`}
-                    >
-                      {days} days
-                    </span>
-                  </td>
-                  <td>
-                    <span
-                      className={`px-2 py-1 rounded text-xs text-white ${
-                        capWarning === "OK"
-                          ? "bg-green-600"
-                          : capWarning === "Above CAP Live"
-                          ? "bg-yellow-500"
-                          : "bg-red-600"
-                      }`}
-                    >
-                      {capWarning}
-                    </span>
-                  </td>
-                  <td>
-                    <button
-                      onClick={() => {
-                        setEditingVehicle(v);
-                        setFormData(v);
-                        setShowForm(true);
-                      }}
-                      className="bg-yellow-500 text-white px-2 py-1 rounded text-xs"
-                    >
-                      Edit
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      onClick={() => toggleStatus(v.id, v.status)}
-                      className="bg-gray-800 text-white px-2 py-1 rounded text-xs"
-                    >
-                      Toggle
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
+    return (
+      <tr key={v.id} className="border-t hover:bg-gray-50">
+        <td>{v.make}</td>
+        <td>{v.model}</td>
+        <td>{v.reg}</td>
+        <td>{v.mileage}</td>
+        <td>£{v.purchase_price}</td>
+        <td>£{v.cap_clean_price}</td>
+        <td>£{v.cap_live_price}</td>
+        <td>{v.status}</td>
+        <td>{motDisplay}</td>
+        <td>{v.transmission}</td>
+        <td>{v.grade}</td>
+        <td>{v.v5c_status}</td>
+        <td>{v.keys_count}</td>
+        <td>{v.sold_date ? formatDate(v.sold_date) : "-"}</td>
+
+        {/* Days - CLEAN NUMBER ONLY */}
+        <td className="text-center">
+          {days}
+        </td>
+
+        {/* CAP Check - KEEP COLOUR */}
+        <td>
+          <span
+            className={`px-2 py-1 rounded text-xs text-white ${
+              capWarning === "OK"
+                ? "bg-green-600"
+                : capWarning === "Above CAP Live"
+                ? "bg-yellow-500"
+                : "bg-red-600"
+            }`}
+          >
+            {capWarning}
+          </span>
+        </td>
+
+        <td>
+          <button
+            onClick={() => {
+              setEditingVehicle(v);
+              setFormData(v);
+              setShowForm(true);
+            }}
+            className="bg-yellow-500 text-white px-2 py-1 rounded text-xs"
+          >
+            Edit
+          </button>
+        </td>
+
+        <td>
+          <button
+            onClick={() => toggleStatus(v.id, v.status)}
+            className="bg-gray-800 text-white px-2 py-1 rounded text-xs"
+          >
+            Toggle
+          </button>
+        </td>
+
+        <td>
+          <button
+            onClick={() => handleDelete(v.id)}
+            className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
         </table>
       </div>
     </div>
