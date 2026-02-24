@@ -230,7 +230,44 @@ const handleDelete = async (id: string) => {
         </button>
       </div>
     </div>
+{showForm && (
+  <div className="mb-8 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div className="grid grid-cols-3 gap-4">
+      {Object.keys(formData).map((field) => (
+        <input
+          key={field}
+          type={field === "mot" ? "date" : "text"}
+          placeholder={field.replaceAll("_", " ")}
+          value={(formData as any)[field]}
+          onChange={(e) =>
+            setFormData({ ...formData, [field]: e.target.value })
+          }
+          className="border border-gray-300 px-3 py-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-black"
+        />
+      ))}
+    </div>
 
+    <div className="mt-6 flex justify-end gap-3">
+      <button
+        onClick={() => {
+          setShowForm(false);
+          setEditingVehicle(null);
+          setFormData(emptyForm);
+        }}
+        className="border border-gray-300 px-4 py-2 text-sm rounded-md hover:bg-gray-50"
+      >
+        Cancel
+      </button>
+
+      <button
+        onClick={handleSave}
+        className="bg-black text-white px-4 py-2 text-sm rounded-md hover:bg-gray-900"
+      >
+        {editingVehicle ? "Update Vehicle" : "Save Vehicle"}
+      </button>
+    </div>
+  </div>
+)}
     {/* TABLE */}
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <table className="min-w-full text-sm">
