@@ -30,17 +30,19 @@ export default function VehiclesPage() {
 
   const [formData, setFormData] = useState(emptyForm);
 
-  const fetchVehicles = async () => {
-    const { data } = await supabase
-      .from("vehicles")
-      .select("*")
-      .order("created_at", { ascending: false });
+const fetchVehicles = async () => {
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select("*");
 
-    if (data) {
-      setVehicles(data);
-      setFilteredVehicles(data);
-    }
-  };
+  console.log("DATA:", data);
+  console.log("ERROR:", error);
+
+  if (error) return;
+
+  setVehicles(data || []);
+  setFilteredVehicles(data || []);
+};
 
   useEffect(() => {
     fetchVehicles();
