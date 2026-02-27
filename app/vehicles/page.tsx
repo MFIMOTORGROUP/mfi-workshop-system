@@ -64,37 +64,54 @@ const fetchVehicles = async () => {
     setFilteredVehicles(temp);
   }, [filterMake, filterStatus, vehicles]);
 
-  const handleSave = async () => {
-    const purchase = Number(formData.purchase_price);
-    const sale = Number(formData.sale_price);
-    const repairs = Number(formData.repairs);
-    const profit = sale - (purchase + repairs);
+const handleSave = async () => {
+  const purchase = Number(formData.purchase_price);
+  const sale = Number(formData.sale_price);
+  const repairs = Number(formData.repairs);
+  const profit = sale - (purchase + repairs);
 
-    const payload = {
-      ...formData,
-      purchase_price: purchase,
-      sale_price: sale,
-      repairs,
-      profit,
-    };
+const payload = {
+  ...formData,
+  mileage: formData.mileage ? Number(formData.mileage) : null,
+  purchase_price: formData.purchase_price ? Number(formData.purchase_price) : 0,
+  sale_price: formData.sale_price ? Number(formData.sale_price) : 0,
+  repairs: formData.repairs ? Number(formData.repairs) : 0,
+  cap_clean_price: formData.cap_clean_price ? Number(formData.cap_clean_price) : null,
+  cap_live_price: formData.cap_live_price ? Number(formData.cap_live_price) : null,
+  keys_count: formData.keys_count ? Number(formData.keys_count) : null,
+  grade: formData.grade ? Number(formData.grade) : null,
+  profit:
+    Number(formData.sale_price || 0) -
+    (Number(formData.purchase_price || 0) +
+      Number(formData.repairs || 0)),
+};
 
-    if (editingVehicle) {
-      await supabase
-        .from("vehicles")
-        .update(payload)
-        .eq("id", editingVehicle.id);
-    } else {
-      await supabase
-        .from("vehicles")
-        .insert([{ ...payload, status: "In Stock" }]);
-    }
+  let response;
 
-    setFormData(emptyForm);
-    setEditingVehicle(null);
-    setShowForm(false);
-    fetchVehicles();
-  };
+  if (editingVehicle) {
+    response = await supabase
+      .from("vehicles")
+      .update(payload)
+      .eq("id", editingVehicle.id);
+  } else {
+    response = await supabase
+      .from("vehicles")
+      .insert([{ ...payload, status: "In Stock" }]);
+  }
 
+  console.log("SAVE RESPONSE:", response);
+
+  if (response.error) {
+    alert("Error saving vehicle. Check console.");
+    console.error(response.error);
+    return;
+  }
+
+  setFormData(emptyForm);
+  setEditingVehicle(null);
+  setShowForm(false);
+  fetchVehicles();
+};
   const toggleStatus = async (id: string, currentStatus: string) => {
     const newStatus = currentStatus === "Sold" ? "In Stock" : "Sold";
 
