@@ -71,19 +71,27 @@ const handleSave = async () => {
   const profit = sale - (purchase + repairs);
 
 const payload = {
-  ...formData,
-  mileage: formData.mileage ? Number(formData.mileage) : null,
-  purchase_price: formData.purchase_price ? Number(formData.purchase_price) : 0,
-  sale_price: formData.sale_price ? Number(formData.sale_price) : 0,
-  repairs: formData.repairs ? Number(formData.repairs) : 0,
-  cap_clean_price: formData.cap_clean_price ? Number(formData.cap_clean_price) : null,
-  cap_live_price: formData.cap_live_price ? Number(formData.cap_live_price) : null,
-  keys_count: formData.keys_count ? Number(formData.keys_count) : null,
-  grade: formData.grade ? Number(formData.grade) : null,
-  profit:
-    Number(formData.sale_price || 0) -
-    (Number(formData.purchase_price || 0) +
-      Number(formData.repairs || 0)),
+  purchase_price: formData.purchase_price
+    ? Number(formData.purchase_price)
+    : 0,
+  sale_price: formData.sale_price
+    ? Number(formData.sale_price)
+    : 0,
+  repairs: formData.repairs
+    ? Number(formData.repairs)
+    : 0,
+  cap_clean_price: formData.cap_clean_price
+    ? Number(formData.cap_clean_price)
+    : null,
+  cap_live_price: formData.cap_live_price
+    ? Number(formData.cap_live_price)
+    : null,
+  keys_count: formData.keys_count
+    ? Number(formData.keys_count)
+    : null,
+  grade: formData.grade
+    ? Number(formData.grade)
+    : null,
 };
 
   let response;
@@ -291,121 +299,119 @@ const handleDelete = async (id: string) => {
     <div className="w-full overflow-x-auto border-t border-gray-200">
       <table className="min-w-[1200px] text-sm">
         <thead className="bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
-          <tr>
-            <th className="px-4 py-3 text-left">Make</th>
-            <th className="px-4 py-3 text-left">Model</th>
-            <th className="px-4 py-3 text-left">Reg</th>
-            <th className="px-4 py-3 text-left">Mileage</th>
-            <th className="px-4 py-3 text-left">Purchase</th>
-            <th className="px-4 py-3 text-left">Repairs</th>
-            <th className="px-4 py-3 text-left">Profit</th>
-            <th className="px-4 py-3 text-left">CAP Clean</th>
-            <th className="px-4 py-3 text-left">CAP Live</th>
-            <th className="px-4 py-3 text-left">Status</th>
-            <th className="px-4 py-3 text-left">MOT</th>
-            <th className="px-4 py-3 text-left">Days</th>
-            <th className="px-4 py-3 text-left">CAP Check</th>
-            <th className="px-4 py-3 text-left">Actions</th>
-          </tr>
-        </thead>
-
+  <tr>
+    <th className="px-4 py-3 text-left">Make</th>
+    <th className="px-4 py-3 text-left">Model</th>
+    <th className="px-4 py-3 text-left">Reg</th>
+    <th className="px-4 py-3 text-left">Mileage</th>
+    <th className="px-4 py-3 text-left">Purchase</th>
+    <th className="px-4 py-3 text-left">Repairs</th>
+    <th className="px-4 py-3 text-left">Total Cost</th>
+    <th className="px-4 py-3 text-left">CAP Clean</th>
+    <th className="px-4 py-3 text-left">CAP Live</th>
+    <th className="px-4 py-3 text-left">CAP Check</th>
+    <th className="px-4 py-3 text-left">Sold Price</th>
+    <th className="px-4 py-3 text-left">Profit</th>
+    <th className="px-4 py-3 text-left">Status</th>
+    <th className="px-4 py-3 text-left">MOT</th>
+    <th className="px-4 py-3 text-left">Days</th>
+    <th className="px-4 py-3 text-left">V5C</th>
+    <th className="px-4 py-3 text-left">Transmission</th>
+    <th className="px-4 py-3 text-left">Grade</th>
+    <th className="px-4 py-3 text-left">Keys</th>
+    <th className="px-4 py-3 text-left">Actions</th>
+  </tr>
+</thead>
         <tbody>
           {filteredVehicles.map((v) => {
-            const days = calculateDaysInStock(v.created_at);
+            const purchase = Number(v.purchase_price || 0);
+const repairs = Number(v.repairs || 0);
+const sale = Number(v.sale_price || 0);
+const capLive = Number(v.cap_live_price || 0);
 
-            const capWarning =
-              v.purchase_price > v.cap_clean_price
-                ? "Over CAP Clean"
-                : v.purchase_price > v.cap_live_price
-                ? "Above CAP Live"
-                : "OK";
-
+const totalCost = purchase + repairs;
+const profit = sale - totalCost;
+const capCheckValue = capLive - totalCost;
+const days = calculateDaysInStock(v.created_at);
             return (
-              <tr
-                key={v.id}
-                className="border-t border-gray-100 hover:bg-gray-50 transition"
-              >
-                <td className="px-4 py-3">{v.make}</td>
-                <td className="px-4 py-3">{v.model}</td>
-                <td className="px-4 py-3">{v.reg}</td>
-                <td className="px-4 py-3">{v.mileage}</td>
-                <td className="px-4 py-3">£{v.purchase_price}</td>
-                <td>£{v.repairs || 0}</td>
+<tr key={v.id} className="border-t border-gray-100 hover:bg-gray-50">
 
-<td>
-  {v.profit >= 0 ? (
-    <span className="text-green-700 font-medium">
-      £{v.profit}
-    </span>
-  ) : (
-    <span className="text-red-600 font-medium">
-      £{v.profit}
-    </span>
-  )}
-</td>
-                <td className="px-4 py-3">£{v.cap_clean_price}</td>
-                <td className="px-4 py-3">£{v.cap_live_price}</td>
-                <td className="px-4 py-3">{v.status}</td>
+  <td className="px-4 py-3">{v.make}</td>
+  <td className="px-4 py-3">{v.model}</td>
+  <td className="px-4 py-3">{v.reg}</td>
+  <td className="px-4 py-3">{v.mileage}</td>
 
-                {/* MOT */}
-                <td className="px-4 py-3">
-                  {v.mot ? (
-                    new Date(v.mot) < new Date() ? (
-                      <span className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-md font-medium">
-                        {formatDate(v.mot)}
-                      </span>
-                    ) : (
-                      <span className="text-gray-700">
-                        {formatDate(v.mot)}
-                      </span>
-                    )
-                  ) : (
-                    "-"
-                  )}
-                </td>
+  <td className="px-4 py-3">£{purchase}</td>
+  <td className="px-4 py-3">£{repairs}</td>
+  <td className="px-4 py-3 font-medium">£{totalCost}</td>
 
-                {/* Days */}
-                <td className="px-4 py-3 text-center">{days}</td>
+  <td className="px-4 py-3">£{v.cap_clean_price}</td>
+  <td className="px-4 py-3">£{v.cap_live_price}</td>
 
-                {/* CAP Check */}
-                <td className="px-4 py-3">
-                  {capWarning === "OK" ? (
-                    <span className="text-gray-600">OK</span>
-                  ) : (
-                    <span className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-md font-medium">
-                      {capWarning}
-                    </span>
-                  )}
-                </td>
+  {/* CAP Check */}
+  <td className="px-4 py-3">
+    {capCheckValue >= 0 ? (
+      <span className="text-green-700 font-medium">
+        +£{capCheckValue}
+      </span>
+    ) : (
+      <span className="text-red-600 font-medium">
+        £{capCheckValue}
+      </span>
+    )}
+  </td>
 
-                {/* Actions */}
-                <td className="px-4 py-3 space-x-3 whitespace-nowrap">
-                  <button
-                    onClick={() => {
-                      setEditingVehicle(v);
-                      setFormData(v);
-                      setShowForm(true);
-                    }}
-                    className="text-blue-600 hover:underline text-sm"
-                  >
-                    Edit
-                  </button>
+  <td className="px-4 py-3">£{sale}</td>
 
-                  <button
-                    onClick={() => toggleStatus(v.id, v.status)}
-                    className="text-gray-600 hover:underline text-sm"
-                  >
-                    Toggle
-                  </button>
+  {/* Profit */}
+  <td className="px-4 py-3">
+    {profit >= 0 ? (
+      <span className="text-green-700 font-semibold">
+        £{profit}
+      </span>
+    ) : (
+      <span className="text-red-600 font-semibold">
+        £{profit}
+      </span>
+    )}
+  </td>
 
-                  <button
-                    onClick={() => handleDelete(v.id)}
-                    className="text-red-600 hover:underline text-sm"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
+  <td className="px-4 py-3">{v.status}</td>
+  <td className="px-4 py-3">{v.mot ? formatDate(v.mot) : "-"}</td>
+  <td className="px-4 py-3 text-center">{days}</td>
+  <td className="px-4 py-3">{v.v5c_status}</td>
+  <td className="px-4 py-3">{v.transmission}</td>
+  <td className="px-4 py-3">{v.grade}</td>
+  <td className="px-4 py-3">{v.keys_count}</td>
+
+  <td className="px-4 py-3 space-x-2 whitespace-nowrap">
+    <button
+      onClick={() => {
+        setEditingVehicle(v);
+        setFormData(v);
+        setShowForm(true);
+      }}
+      className="text-blue-600 hover:underline text-sm"
+    >
+      Edit
+    </button>
+
+    <button
+      onClick={() => toggleStatus(v.id, v.status)}
+      className="text-gray-600 hover:underline text-sm"
+    >
+      Toggle
+    </button>
+
+    <button
+      onClick={() => handleDelete(v.id)}
+      className="text-red-600 hover:underline text-sm"
+    >
+      Delete
+    </button>
+  </td>
+
+</tr>
             );
           })}
         </tbody>
