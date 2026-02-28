@@ -227,20 +227,29 @@ export default function JobCardsPage() {
                 </td>
 
                 <td className="px-4 py-3">
-                  {job.status === "Completed" ? (
-                    <span className="text-green-700 font-medium">
-                      Completed
-                    </span>
-                  ) : job.status === "In Progress" ? (
-                    <span className="text-yellow-700 font-medium">
-                      In Progress
-                    </span>
-                  ) : (
-                    <span className="text-gray-600">
-                      Pending
-                    </span>
-                  )}
-                </td>
+  <select
+    value={job.status}
+    onChange={async (e) => {
+      await supabase
+        .from("job_cards")
+        .update({ status: e.target.value })
+        .eq("id", job.id);
+
+      fetchJobCards();
+    }}
+    className={`px-2 py-1 rounded-md text-sm font-medium ${
+      job.status === "Completed"
+        ? "bg-green-100 text-green-700"
+        : job.status === "In Progress"
+        ? "bg-yellow-100 text-yellow-700"
+        : "bg-gray-100 text-gray-600"
+    }`}
+  >
+    <option value="Pending">Pending</option>
+    <option value="In Progress">In Progress</option>
+    <option value="Completed">Completed</option>
+  </select>
+</td>
 
                 <td className="px-4 py-3">
                   <button
