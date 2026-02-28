@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "../lib/supabase";
 
 export default function JobCardsPage() {
@@ -12,15 +13,19 @@ export default function JobCardsPage() {
   const [labour, setLabour] = useState("");
   const [parts, setParts] = useState("");
   const [status, setStatus] = useState("Pending");
+  const searchParams = useSearchParams();
 
   const labourNum = Number(labour) || 0;
   const partsNum = Number(parts) || 0;
   const total = labourNum + partsNum;
 
-  useEffect(() => {
-    fetchVehicles();
-    fetchJobCards();
-  }, []);
+useEffect(() => {
+  const vehicleFromUrl = searchParams.get("vehicle");
+
+  if (vehicleFromUrl) {
+    setSelectedVehicle(vehicleFromUrl);
+  }
+}, [searchParams]);
 
   const fetchVehicles = async () => {
     const { data } = await supabase

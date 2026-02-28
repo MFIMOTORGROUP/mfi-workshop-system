@@ -523,7 +523,14 @@ const days = calculateDaysInStock(v.created_at);
   <td className="px-4 py-3">{v.mileage}</td>
 
   <td className="px-4 py-3">£{purchase}</td>
-  <td className="px-4 py-3">£{repairs}</td>
+<td className="px-4 py-3">
+  <a
+    href={`/jobcards?vehicle=${v.id}`}
+    className="text-blue-600 hover:underline font-medium"
+  >
+    £{repairs}
+  </a>
+</td>
   <td className="px-4 py-3 font-medium">£{totalCost}</td>
 
   <td className="px-4 py-3">£{v.cap_clean_price}</td>
