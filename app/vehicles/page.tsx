@@ -258,18 +258,178 @@ const handleDelete = async (id: string) => {
 {showForm && (
   <div className="mb-8 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
     <div className="grid grid-cols-3 gap-4">
-      {Object.keys(formData).map((field) => (
-        <input
-          key={field}
-          type={field === "mot" ? "date" : "text"}
-          placeholder={field.replaceAll("_", " ")}
-          value={(formData as any)[field]}
-          onChange={(e) =>
-            setFormData({ ...formData, [field]: e.target.value })
-          }
-          className="border border-gray-300 px-3 py-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-black"
-        />
-      ))}
+<div className="mb-6">
+  <h3 className="text-sm font-semibold mb-3">Basic Information</h3>
+
+  <div className="grid grid-cols-3 gap-4">
+    <div>
+      <label className="text-xs text-gray-600">Make</label>
+      <input
+        value={formData.make}
+        onChange={(e) => setFormData({ ...formData, make: e.target.value })}
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+
+    <div>
+      <label className="text-xs text-gray-600">Model</label>
+      <input
+        value={formData.model}
+        onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+
+    <div>
+      <label className="text-xs text-gray-600">Registration</label>
+      <input
+        value={formData.reg}
+        onChange={(e) => setFormData({ ...formData, reg: e.target.value })}
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+  </div>
+</div>
+<div className="mb-6">
+  <h3 className="text-sm font-semibold mb-3">Financial Information</h3>
+
+  <div className="grid grid-cols-3 gap-4">
+    <div>
+      <label className="text-xs text-gray-600">Purchase Price (£)</label>
+      <input
+        type="number"
+        value={formData.purchase_price}
+        onChange={(e) =>
+          setFormData({ ...formData, purchase_price: e.target.value })
+        }
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+
+    <div>
+      <label className="text-xs text-gray-600">Repairs (£)</label>
+      <input
+        type="number"
+        value={formData.repairs}
+        onChange={(e) =>
+          setFormData({ ...formData, repairs: e.target.value })
+        }
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+
+    <div>
+      <label className="text-xs text-gray-600">Sale Price (£)</label>
+      <input
+        type="number"
+        value={formData.sale_price}
+        onChange={(e) =>
+          setFormData({ ...formData, sale_price: e.target.value })
+        }
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+
+    <div>
+      <label className="text-xs text-gray-600">CAP Clean (£)</label>
+      <input
+        type="number"
+        value={formData.cap_clean_price}
+        onChange={(e) =>
+          setFormData({ ...formData, cap_clean_price: e.target.value })
+        }
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+
+    <div>
+      <label className="text-xs text-gray-600">CAP Live (£)</label>
+      <input
+        type="number"
+        value={formData.cap_live_price}
+        onChange={(e) =>
+          setFormData({ ...formData, cap_live_price: e.target.value })
+        }
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+  </div>
+</div>
+<div className="mb-6">
+  <h3 className="text-sm font-semibold mb-3">Vehicle Details</h3>
+
+  <div className="grid grid-cols-3 gap-4">
+    <div>
+      <label className="text-xs text-gray-600">Mileage</label>
+      <input
+        type="number"
+        value={formData.mileage}
+        onChange={(e) =>
+          setFormData({ ...formData, mileage: e.target.value })
+        }
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+
+    <div>
+      <label className="text-xs text-gray-600">MOT Date</label>
+      <input
+        type="date"
+        value={formData.mot}
+        onChange={(e) =>
+          setFormData({ ...formData, mot: e.target.value })
+        }
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+
+    <div>
+      <label className="text-xs text-gray-600">Transmission</label>
+      <input
+        value={formData.transmission}
+        onChange={(e) =>
+          setFormData({ ...formData, transmission: e.target.value })
+        }
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+
+    <div>
+      <label className="text-xs text-gray-600">Grade</label>
+      <input
+        type="number"
+        value={formData.grade}
+        onChange={(e) =>
+          setFormData({ ...formData, grade: e.target.value })
+        }
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+
+    <div>
+      <label className="text-xs text-gray-600">V5C Status</label>
+      <input
+        value={formData.v5c_status}
+        onChange={(e) =>
+          setFormData({ ...formData, v5c_status: e.target.value })
+        }
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+
+    <div>
+      <label className="text-xs text-gray-600">Keys</label>
+      <input
+        type="number"
+        value={formData.keys_count}
+        onChange={(e) =>
+          setFormData({ ...formData, keys_count: e.target.value })
+        }
+        className="w-full border px-3 py-2 rounded-md text-sm"
+      />
+    </div>
+  </div>
+</div>
     </div>
 
     <div className="mt-6 flex justify-end gap-3">
