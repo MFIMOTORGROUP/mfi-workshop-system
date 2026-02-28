@@ -363,16 +363,18 @@ const days = calculateDaysInStock(v.created_at);
 
   {/* Profit */}
   <td className="px-4 py-3">
-    {profit >= 0 ? (
-      <span className="text-green-700 font-semibold">
-        £{profit}
-      </span>
-    ) : (
-      <span className="text-red-600 font-semibold">
-        £{profit}
-      </span>
-    )}
-  </td>
+  {v.status !== "Sold" ? (
+    <span className="text-gray-500">Awaiting Sale</span>
+  ) : profit >= 0 ? (
+    <span className="text-green-700 font-semibold">
+      £{profit}
+    </span>
+  ) : (
+    <span className="text-red-600 font-semibold">
+      £{profit}
+    </span>
+  )}
+</td>
 
   <td className="px-4 py-3">{v.status}</td>
   <td className="px-4 py-3">{v.mot ? formatDate(v.mot) : "-"}</td>
