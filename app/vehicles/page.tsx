@@ -562,7 +562,31 @@ const days = calculateDaysInStock(v.created_at);
   <td className="px-4 py-3">{v.status}</td>
   <td className="px-4 py-3">{v.mot ? formatDate(v.mot) : "-"}</td>
   <td className="px-4 py-3 text-center">{days}</td>
-  <td className="px-4 py-3">{v.v5c_status}</td>
+  <td className="px-4 py-3">
+  {v.v5c_status === "Present" && (
+    <span className="px-2 py-1 text-xs rounded-md bg-green-100 text-green-700 font-medium">
+      Present
+    </span>
+  )}
+
+  {v.v5c_status === "Applied For" && (
+    <span className="px-2 py-1 text-xs rounded-md bg-yellow-100 text-yellow-700 font-medium">
+      Applied For
+    </span>
+  )}
+
+  {v.v5c_status === "Not Present" && (
+    <span className="px-2 py-1 text-xs rounded-md bg-red-100 text-red-700 font-medium">
+      Not Present
+    </span>
+  )}
+
+  {!v.v5c_status && (
+    <span className="px-2 py-1 text-xs rounded-md bg-gray-100 text-gray-500 font-medium">
+      Unknown
+    </span>
+  )}
+</td>
   <td className="px-4 py-3">{v.transmission}</td>
   <td className="px-4 py-3">{v.grade}</td>
   <td className="px-4 py-3">{v.keys_count}</td>
