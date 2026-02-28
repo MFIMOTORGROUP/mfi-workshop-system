@@ -118,22 +118,7 @@ const payload = {
   setShowForm(false);
   fetchVehicles();
 };
-  const toggleStatus = async (id: string, currentStatus: string) => {
-    const newStatus = currentStatus === "Sold" ? "In Stock" : "Sold";
-
-    await supabase
-      .from("vehicles")
-      .update({
-        status: newStatus,
-        sold_date:
-          newStatus === "Sold"
-            ? new Date().toISOString().split("T")[0]
-            : null,
-      })
-      .eq("id", id);
-
-    fetchVehicles();
-  };
+  
 const handleDelete = async (id: string) => {
   const confirmDelete = window.confirm(
     "Are you sure you want to delete this vehicle?"
@@ -610,7 +595,7 @@ const days = calculateDaysInStock(v.created_at);
       Edit
     </button>
 
-<td className="px-4 py-3">
+<td className="px-3 py-2">
   <select
     value={v.status}
     onChange={async (e) => {
@@ -627,14 +612,13 @@ const days = calculateDaysInStock(v.created_at);
 
       fetchVehicles();
     }}
-    className="border px-2 py-1 rounded-md text-sm bg-white"
+    className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white"
   >
     <option value="In Stock">In Stock</option>
     <option value="Sold">Sold</option>
     <option value="Not To Sell">Not To Sell</option>
   </select>
 </td>
-
     <button
       onClick={() => handleDelete(v.id)}
       className="text-red-600 hover:underline text-sm"
