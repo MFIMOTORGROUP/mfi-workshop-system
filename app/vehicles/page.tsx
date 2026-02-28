@@ -385,48 +385,71 @@ const handleDelete = async (id: string) => {
 
     <div>
       <label className="text-xs text-gray-600">Transmission</label>
-      <input
-        value={formData.transmission}
-        onChange={(e) =>
-          setFormData({ ...formData, transmission: e.target.value })
-        }
-        className="w-full border px-3 py-2 rounded-md text-sm"
-      />
+      <select
+  value={formData.transmission || ""}
+  onChange={(e) =>
+    setFormData({ ...formData, transmission: e.target.value })
+  }
+  className="w-full border px-3 py-2 rounded-md text-sm bg-white"
+>
+  <option value="">Select Transmission</option>
+  <option value="Manual">Manual</option>
+  <option value="Automatic">Automatic</option>
+  <option value="Semi-Automatic">Semi-Automatic</option>
+</select>
     </div>
 
     <div>
       <label className="text-xs text-gray-600">Grade</label>
-      <input
-        type="number"
-        value={formData.grade}
-        onChange={(e) =>
-          setFormData({ ...formData, grade: e.target.value })
-        }
-        className="w-full border px-3 py-2 rounded-md text-sm"
-      />
+      <select
+  value={formData.grade || ""}
+  onChange={(e) =>
+    setFormData({ ...formData, grade: e.target.value })
+  }
+  className="w-full border px-3 py-2 rounded-md text-sm bg-white"
+>
+  <option value="">Select Grade</option>
+  <option value="0">0</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+  <option value="6">6</option>
+</select>
     </div>
 
     <div>
       <label className="text-xs text-gray-600">V5C Status</label>
-      <input
-        value={formData.v5c_status}
-        onChange={(e) =>
-          setFormData({ ...formData, v5c_status: e.target.value })
-        }
-        className="w-full border px-3 py-2 rounded-md text-sm"
-      />
+ <select
+  value={formData.v5c_status || ""}
+  onChange={(e) =>
+    setFormData({ ...formData, v5c_status: e.target.value })
+  }
+  className="w-full border px-3 py-2 rounded-md text-sm bg-white"
+>
+  <option value="">Select Status</option>
+  <option value="Present">Present</option>
+  <option value="Applied For">Applied For</option>
+  <option value="Not Present">Not Present</option>
+</select>
     </div>
 
     <div>
       <label className="text-xs text-gray-600">Keys</label>
-      <input
-        type="number"
-        value={formData.keys_count}
-        onChange={(e) =>
-          setFormData({ ...formData, keys_count: e.target.value })
-        }
-        className="w-full border px-3 py-2 rounded-md text-sm"
-      />
+      <select
+  value={formData.keys_count || ""}
+  onChange={(e) =>
+    setFormData({ ...formData, keys_count: e.target.value })
+  }
+  className="w-full border px-3 py-2 rounded-md text-sm bg-white"
+>
+  <option value="">Select Keys</option>
+  <option value="0">0</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+</select>
     </div>
   </div>
 </div>
