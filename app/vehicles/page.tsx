@@ -71,29 +71,27 @@ const handleSave = async () => {
   const profit = sale - (purchase + repairs);
 
 const payload = {
-  purchase_price: formData.purchase_price
-    ? Number(formData.purchase_price)
-    : 0,
-  sale_price: formData.sale_price
-    ? Number(formData.sale_price)
-    : 0,
-  repairs: formData.repairs
-    ? Number(formData.repairs)
-    : 0,
+  make: formData.make,
+  model: formData.model,
+  reg: formData.reg,
+  mileage: formData.mileage ? Number(formData.mileage) : null,
+  purchase_price: formData.purchase_price ? Number(formData.purchase_price) : 0,
+  sale_price: formData.sale_price ? Number(formData.sale_price) : 0,
+  repairs: formData.repairs ? Number(formData.repairs) : 0,
   cap_clean_price: formData.cap_clean_price
     ? Number(formData.cap_clean_price)
     : null,
   cap_live_price: formData.cap_live_price
     ? Number(formData.cap_live_price)
     : null,
+  mot: formData.mot || null,
+  transmission: formData.transmission || null,
+  grade: formData.grade ? Number(formData.grade) : null,
+  v5c_status: formData.v5c_status || null,
   keys_count: formData.keys_count
     ? Number(formData.keys_count)
     : null,
-  grade: formData.grade
-    ? Number(formData.grade)
-    : null,
 };
-
   let response;
 
   if (editingVehicle) {
