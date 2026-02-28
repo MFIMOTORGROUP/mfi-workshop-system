@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic";
+
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -19,7 +19,10 @@ export default function JobCardsPage() {
   const labourNum = Number(labour) || 0;
   const partsNum = Number(parts) || 0;
   const total = labourNum + partsNum;
-
+useEffect(() => {
+  fetchVehicles();
+  fetchJobCards();
+}, []);
 useEffect(() => {
   const vehicleFromUrl = searchParams.get("vehicle");
 
