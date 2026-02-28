@@ -266,7 +266,7 @@ const handleDelete = async (id: string) => {
       <label className="text-xs text-gray-600">Make</label>
       <input
         value={formData.make}
-        onChange={(e) => setFormData({ ...formData, make: e.target.value })}
+        onChange={(e) => setFormData({ ...formData, make: e.target.value.toUpperCase() })}
         className="w-full border px-3 py-2 rounded-md text-sm"
       />
     </div>
@@ -275,7 +275,7 @@ const handleDelete = async (id: string) => {
       <label className="text-xs text-gray-600">Model</label>
       <input
         value={formData.model}
-        onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+        onChange={(e) => setFormData({ ...formData, model: e.target.value.toUpperCase() })}
         className="w-full border px-3 py-2 rounded-md text-sm"
       />
     </div>
@@ -284,7 +284,7 @@ const handleDelete = async (id: string) => {
       <label className="text-xs text-gray-600">Registration</label>
       <input
         value={formData.reg}
-        onChange={(e) => setFormData({ ...formData, reg: e.target.value })}
+        onChange={(e) => setFormData({ ...formData, reg: e.target.value.toUpperCase() })}
         className="w-full border px-3 py-2 rounded-md text-sm"
       />
     </div>
@@ -515,7 +515,7 @@ const profit = sale - totalCost;
 const capCheckValue = capLive - totalCost;
 const days = calculateDaysInStock(v.created_at);
             return (
-<tr key={v.id} className="border-t border-gray-100 hover:bg-gray-50">
+<tr key={v.id} className="border-b border-gray-300 hover:bg-gray-50">
 
   <td className="px-4 py-3">{v.make}</td>
   <td className="px-4 py-3">{v.model}</td>
@@ -531,7 +531,7 @@ const days = calculateDaysInStock(v.created_at);
     £{repairs}
   </a>
 </td>
-  <td className="px-4 py-3 font-medium">£{totalCost}</td>
+  <td className="px-4 py-3 font-bold">£{totalCost}</td>
 
   <td className="px-4 py-3">£{v.cap_clean_price}</td>
   <td className="px-4 py-3">£{v.cap_live_price}</td>
@@ -540,11 +540,11 @@ const days = calculateDaysInStock(v.created_at);
   <td className="px-4 py-3">
     {capCheckValue >= 0 ? (
       <span className="text-green-700 font-medium">
-        +£{capCheckValue}
+        £{capCheckValue.toFixed(2)}
       </span>
     ) : (
       <span className="text-red-600 font-medium">
-        £{capCheckValue}
+       £{capCheckValue.toFixed(2)}
       </span>
     )}
   </td>
@@ -610,12 +610,30 @@ const days = calculateDaysInStock(v.created_at);
       Edit
     </button>
 
-    <button
-      onClick={() => toggleStatus(v.id, v.status)}
-      className="text-gray-600 hover:underline text-sm"
-    >
-      Toggle
-    </button>
+<td className="px-4 py-3">
+  <select
+    value={v.status}
+    onChange={async (e) => {
+      await supabase
+        .from("vehicles")
+        .update({
+          status: e.target.value,
+          sold_date:
+            e.target.value === "Sold"
+              ? new Date().toISOString().split("T")[0]
+              : null,
+        })
+        .eq("id", v.id);
+
+      fetchVehicles();
+    }}
+    className="border px-2 py-1 rounded-md text-sm bg-white"
+  >
+    <option value="In Stock">In Stock</option>
+    <option value="Sold">Sold</option>
+    <option value="Not To Sell">Not To Sell</option>
+  </select>
+</td>
 
     <button
       onClick={() => handleDelete(v.id)}
