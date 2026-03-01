@@ -466,11 +466,11 @@ const handleDelete = async (id: string) => {
   <div className="overflow-x-auto">
     <div className="max-h-[600px] overflow-y-auto">
       <table className="min-w-[1400px] text-sm [&_td]:px-3 [&_td]:py-2 [&_th]:px-3 [&_th]:py-2">
-        <thead className="bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
+       <thead className="sticky top-0 z-20 bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
   <tr>
-    <th className="px-4 py-3 text-left">Make</th>
-    <th className="px-4 py-3 text-left">Model</th>
-    <th className="px-4 py-3 text-left">Reg</th>
+<th className="sticky left-0 bg-gray-50 z-30 px-4 py-3 text-left">Make</th>
+<th className="sticky left-[120px] bg-gray-50 z-30 px-4 py-3 text-left">Model</th>
+<th className="sticky left-[240px] bg-gray-50 z-30 px-4 py-3 text-left">Reg</th>
     <th className="px-4 py-3 text-left">Mileage</th>
     <th className="px-4 py-3 text-left">Purchase</th>
     <th className="px-4 py-3 text-left">Repairs</th>
@@ -504,9 +504,9 @@ const days = calculateDaysInStock(v.created_at);
             return (
 <tr key={v.id} className="border-b border-gray-300 hover:bg-gray-50">
 
-  <td className="px-4 py-3">{v.make}</td>
-  <td className="px-4 py-3">{v.model}</td>
-  <td className="px-4 py-3">{v.reg}</td>
+  <td className="sticky left-0 bg-white z-10 px-4 py-3">{v.make}</td>
+<td className="sticky left-0 bg-white z-10 px-4 py-3">{v.model}</td>
+<td className="sticky left-0 bg-white z-10 px-4 py-3">{v.reg}</td>
   <td className="px-4 py-3">{v.mileage}</td>
 
   <td className="px-4 py-3">£{purchase}</td>
