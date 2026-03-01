@@ -466,7 +466,7 @@ const handleDelete = async (id: string) => {
 )}
   {/* TABLE */}
 <div className="w-full border-t border-gray-200">
-<div className="max-h-[600px] overflow-auto">
+<div className="max-h-[600px] overflow-x-auto overflow-y-auto">
   <table className="w-full text-sm [&_td]:px-3 [&_td]:py-2 [&_th]:px-3 [&_th]:py-2">
        <thead className="sticky top-0 z-20 bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
   <tr>
