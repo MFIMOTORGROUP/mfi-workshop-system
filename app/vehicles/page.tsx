@@ -551,7 +551,30 @@ const days = calculateDaysInStock(v.created_at);
   )}
 </td>
 
-  <td className="px-4 py-3">{v.status}</td>
+  <td className="px-3 py-2">
+  <select
+    value={v.status}
+    onChange={async (e) => {
+      await supabase
+        .from("vehicles")
+        .update({
+          status: e.target.value,
+          sold_date:
+            e.target.value === "Sold"
+              ? new Date().toISOString().split("T")[0]
+              : null,
+        })
+        .eq("id", v.id);
+
+      fetchVehicles();
+    }}
+    className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white"
+  >
+    <option value="In Stock">In Stock</option>
+    <option value="Sold">Sold</option>
+    <option value="Not To Sell">Not To Sell</option>
+  </select>
+</td>
   <td className="px-4 py-3">{v.mot ? formatDate(v.mot) : "-"}</td>
   <td className="px-4 py-3 text-center">{days}</td>
   <td className="px-4 py-3">
@@ -595,30 +618,6 @@ const days = calculateDaysInStock(v.created_at);
       Edit
     </button>
 
-<td className="px-3 py-2">
-  <select
-    value={v.status}
-    onChange={async (e) => {
-      await supabase
-        .from("vehicles")
-        .update({
-          status: e.target.value,
-          sold_date:
-            e.target.value === "Sold"
-              ? new Date().toISOString().split("T")[0]
-              : null,
-        })
-        .eq("id", v.id);
-
-      fetchVehicles();
-    }}
-    className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white"
-  >
-    <option value="In Stock">In Stock</option>
-    <option value="Sold">Sold</option>
-    <option value="Not To Sell">Not To Sell</option>
-  </select>
-</td>
     <button
       onClick={() => handleDelete(v.id)}
       className="text-red-600 hover:underline text-sm"
