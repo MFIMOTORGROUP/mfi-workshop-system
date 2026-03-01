@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "../lib/supabase";
-import { useRouter } from "next/navigation";
 
 export default function ProtectedLayout({
   children,
@@ -10,27 +10,45 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    const checkAccess = async () => {
+      const { data: userData } = await supabase.auth.getUser();
 
-      if (!user) {
+      if (!userData.user) {
         router.push("/login");
-      } else {
-        setLoading(false);
+        return;
       }
+
+      // Get role from profiles table
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", userData.user.id)
+        .single();
+
+      const role = profile?.role;
+
+      // 🔒 ROLE RULES
+      if (role === "mechanic") {
+        // Mechanic can only access jobcards
+        if (!pathname.startsWith("/jobcards")) {
+          router.push("/jobcards");
+          return;
+        }
+      }
+
+      // Admin & staff can access everything for now
+
+      setLoading(false);
     };
 
-    checkUser();
-  }, [router]);
+    checkAccess();
+  }, [pathname, router]);
 
-  if (loading) {
-    return <div className="p-10">Checking authentication...</div>;
-  }
+  if (loading) return null;
 
   return <>{children}</>;
 }
