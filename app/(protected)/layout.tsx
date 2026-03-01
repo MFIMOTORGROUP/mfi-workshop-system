@@ -14,34 +14,34 @@ export default function ProtectedLayout({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAccess = async () => {
-const { data: { session } } = await supabase.auth.getSession();
+  const checkAccess = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
 
-if (!session) {
-  router.push("/login");
-  return;
-}
+    // 🔒 Wait properly for session
+    if (!session) {
+      router.replace("/login"); // replace instead of push
+      return;
+    }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", session.user.id)
-        .single();
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", session.user.id)
+      .single();
 
-      const role = profile?.role;
+    const role = profile?.role;
 
-      if (role === "mechanic") {
-        if (!pathname.startsWith("/jobcards")) {
-          router.push("/jobcards");
-          return;
-        }
-      }
+    // 🔒 Mechanic restriction
+    if (role === "mechanic" && !pathname.startsWith("/jobcards")) {
+      router.replace("/jobcards");
+      return;
+    }
 
-      setLoading(false);
-    };
+    setLoading(false);
+  };
 
-    checkAccess();
-  }, [pathname, router]);
+  checkAccess();
+}, [pathname]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
