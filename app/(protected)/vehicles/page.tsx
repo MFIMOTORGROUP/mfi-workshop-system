@@ -603,7 +603,9 @@ const handleDelete = async (id: string) => {
 >
    CAP Live
 </th>
-    <th className="px-4 py-3 text-left">CAP Check</th>
+ {role === "admin" && (
+  <th className="px-4 py-3 text-left">CAP Check</th>
+)}
 <th
   onClick={() => handleSort("sale_price")}
   className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
@@ -733,6 +735,7 @@ const days = calculateDaysInStock(v.created_at);
   <td className="px-4 py-3">£{v.cap_live_price}</td>
 
   {/* CAP Check */}
+  {role === "admin" && (
   <td className="px-4 py-3">
     {capCheckValue >= 0 ? (
       <span className="text-green-700 font-medium">
@@ -740,11 +743,11 @@ const days = calculateDaysInStock(v.created_at);
       </span>
     ) : (
       <span className="text-red-600 font-medium">
-       £{capCheckValue.toFixed(2)}
+        £{capCheckValue.toFixed(2)}
       </span>
     )}
   </td>
-
+)}
   <td className="px-4 py-3">
   {editingSaleId === v.id ? (
     <input
