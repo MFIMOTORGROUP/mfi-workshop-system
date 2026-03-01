@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-const [searchMake, setSearchMake] = useState("");
 import { supabase } from "../lib/supabase";
 
 export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [filteredVehicles, setFilteredVehicles] = useState<any[]>([]);
+  const [searchMake, setSearchMake] = useState("");
   const [sortConfig, setSortConfig] = useState<{
   key: string;
   direction: "asc" | "desc";
