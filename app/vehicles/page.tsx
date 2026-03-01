@@ -467,9 +467,18 @@ const handleDelete = async (id: string) => {
       <table className="min-w-[1400px] text-sm [&_td]:px-3 [&_td]:py-2 [&_th]:px-3 [&_th]:py-2">
        <thead className="sticky top-0 z-20 bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
   <tr>
-<th className="sticky left-0 bg-gray-50 z-30 px-4 py-3 text-left">Make</th>
-<th className="sticky left-[120px] bg-gray-50 z-30 px-4 py-3 text-left">Model</th>
-<th className="sticky left-[240px] bg-gray-50 z-30 px-4 py-3 text-left">Reg</th>
+<th className="sticky left-0 w-[150px] min-w-[150px] z-40 bg-gray-50 px-4 py-3 text-left">
+  Make
+</th>
+
+<th className="sticky left-[150px] w-[180px] min-w-[180px] z-40 bg-gray-50 px-4 py-3 text-left">
+  Model
+</th>
+
+<th className="sticky left-[330px] w-[130px] min-w-[130px] z-40 bg-gray-50 px-4 py-3 text-left">
+  Reg
+  shadow-[4px_0_6px_-2px_rgba(0,0,0,0.1)]
+</th>
     <th className="px-4 py-3 text-left">Mileage</th>
     <th className="px-4 py-3 text-left">Purchase</th>
     <th className="px-4 py-3 text-left">Repairs</th>
@@ -503,16 +512,17 @@ const days = calculateDaysInStock(v.created_at);
             return (
 <tr key={v.id} className="border-b border-gray-300 hover:bg-gray-50">
 
-<td className="sticky left-0 z-20 bg-white px-4 py-3">
+<td className="sticky left-0 w-[150px] min-w-[150px] z-30 bg-white px-4 py-3">
   {v.make}
 </td>
 
-<td className="sticky left-[120px] z-20 bg-white px-4 py-3">
+<td className="sticky left-[150px] w-[180px] min-w-[180px] z-30 bg-white px-4 py-3">
   {v.model}
 </td>
 
-<td className="sticky left-[240px] z-20 bg-white px-4 py-3">
+<td className="sticky left-[330px] w-[130px] min-w-[130px] z-30 bg-white px-4 py-3">
   {v.reg}
+  shadow-[4px_0_6px_-2px_rgba(0,0,0,0.08)]
 </td>
   <td className="px-4 py-3">{v.mileage}</td>
 
