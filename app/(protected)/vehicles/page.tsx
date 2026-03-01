@@ -319,7 +319,7 @@ const handleDelete = async (id: string) => {
 </button>
       </div>
     </div>
-{showForm && (
+{role === "admin" && showForm && (
   <div className="mb-8 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
     <div className="grid grid-cols-3 gap-4">
 <div className="mb-6">
@@ -753,16 +753,18 @@ const days = calculateDaysInStock(v.created_at);
       autoFocus
       onChange={(e) => setTempSaleValue(e.target.value)}
       onBlur={async () => {
-        await supabase
-          .from("vehicles")
-          .update({ sale_price: Number(tempSaleValue) })
-          .eq("id", v.id);
+        if (role === "admin") {
+          await supabase
+            .from("vehicles")
+            .update({ sale_price: Number(tempSaleValue) })
+            .eq("id", v.id);
 
-        setEditingSaleId(null);
-        fetchVehicles();
+          setEditingSaleId(null);
+          fetchVehicles();
+        }
       }}
       onKeyDown={async (e) => {
-        if (e.key === "Enter") {
+        if (e.key === "Enter" && role === "admin") {
           await supabase
             .from("vehicles")
             .update({ sale_price: Number(tempSaleValue) })
@@ -774,7 +776,7 @@ const days = calculateDaysInStock(v.created_at);
       }}
       className="w-24 border border-gray-300 rounded-md px-2 py-1 text-sm"
     />
-  ) : (
+  ) : role === "admin" ? (
     <span
       onClick={() => {
         setEditingSaleId(v.id);
@@ -784,6 +786,8 @@ const days = calculateDaysInStock(v.created_at);
     >
       £{v.sale_price || 0}
     </span>
+  ) : (
+    <span>£{v.sale_price || 0}</span>
   )}
 </td>
 
@@ -819,6 +823,7 @@ const days = calculateDaysInStock(v.created_at);
   </td>
 )}
   <td className="px-3 py-2">
+  {role === "admin" ? (
   <select
     value={v.status}
     onChange={async (e) => {
@@ -841,6 +846,9 @@ const days = calculateDaysInStock(v.created_at);
     <option value="Sold">Sold</option>
     <option value="Not To Sell">Not To Sell</option>
   </select>
+) : (
+  <span>{v.status}</span>
+)}
 </td>
   <td className="px-4 py-3">
   {v.mot ? (() => {
