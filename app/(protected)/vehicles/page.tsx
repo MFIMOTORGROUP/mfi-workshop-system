@@ -298,23 +298,25 @@ const handleDelete = async (id: string) => {
 </div>
     <div className="flex items-center justify-between mb-8">
             <div className="flex gap-3">
-        <button
-          onClick={exportToCSV}
-          className="border border-gray-300 px-4 py-2 text-sm rounded-md hover:bg-gray-50"
-        >
-          Export
-        </button>
+     {role === "admin" && (
+  <button
+    onClick={exportToCSV}
+    className="border border-gray-300 px-4 py-2 text-sm rounded-md hover:bg-gray-50"
+  >
+    Export
+  </button>
+)}
 
         <button
-          onClick={() => {
-            setShowForm(!showForm);
-            setEditingVehicle(null);
-            setFormData(emptyForm);
-          }}
-          className="bg-black text-white px-4 py-2 text-sm rounded-md hover:bg-gray-900"
-        >
-          + Add Vehicle
-        </button>
+  onClick={() => {
+    setShowForm(!showForm);
+    setEditingVehicle(null);
+    setFormData(emptyForm);
+  }}
+  className="bg-black text-white px-4 py-2 text-sm rounded-md hover:bg-gray-900"
+>
+  + Add Vehicle
+</button>
       </div>
     </div>
 {showForm && (
@@ -666,7 +668,9 @@ const handleDelete = async (id: string) => {
 >
    Keys
 </th>
-    <th className="px-4 py-3 text-left">Actions</th>
+    {role === "admin" && (
+  <th className="px-4 py-3 text-left">Actions</th>
+)}
   </tr>
   <tr className="bg-gray-100 text-xs">
   <th className="sticky left-0 w-[150px] min-w-[150px] bg-white z-30">
@@ -889,6 +893,8 @@ const days = calculateDaysInStock(v.created_at);
   <td className="px-4 py-3">{v.keys_count}</td>
 
   <td className="px-4 py-3 space-x-2 whitespace-nowrap">
+    {role === "admin" && (
+  <td className="px-4 py-3 space-x-2 whitespace-nowrap">
     <button
       onClick={() => {
         setEditingVehicle(v);
@@ -906,6 +912,8 @@ const days = calculateDaysInStock(v.created_at);
     >
       Delete
     </button>
+  </td>
+)}
   </td>
 
 </tr>
