@@ -37,11 +37,9 @@ export default function RootLayout({
             </nav>
           </div>
         </header>
-
-        {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-8 py-8">
-          {children}
-        </main>
+<main className="w-full">
+  {children}
+</main>
 
       </body>
     </html>
