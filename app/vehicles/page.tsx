@@ -196,7 +196,7 @@ const handleDelete = async (id: string) => {
   };
 
   return (
-  <div className="px-6 py-6">
+  <div className="py-6">
     <h1 className="text-2xl font-semibold mb-8">Vehicle Stock</h1>
 
     {/* Controls */}
