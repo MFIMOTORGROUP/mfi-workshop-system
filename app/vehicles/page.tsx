@@ -522,7 +522,6 @@ const days = calculateDaysInStock(v.created_at);
 
 <td className="sticky left-[330px] w-[130px] min-w-[130px] z-30 bg-white px-4 py-3">
   {v.reg}
-  shadow-[4px_0_6px_-2px_rgba(0,0,0,0.08)]
 </td>
   <td className="px-4 py-3">{v.mileage}</td>
 
