@@ -503,9 +503,17 @@ const days = calculateDaysInStock(v.created_at);
             return (
 <tr key={v.id} className="border-b border-gray-300 hover:bg-gray-50">
 
-  <td className="sticky left-0 bg-white z-10 px-4 py-3">{v.make}</td>
-<td className="sticky left-0 bg-white z-10 px-4 py-3">{v.model}</td>
-<td className="sticky left-0 bg-white z-10 px-4 py-3">{v.reg}</td>
+<td className="sticky left-0 z-20 bg-white px-4 py-3">
+  {v.make}
+</td>
+
+<td className="sticky left-[120px] z-20 bg-white px-4 py-3">
+  {v.model}
+</td>
+
+<td className="sticky left-[240px] z-20 bg-white px-4 py-3">
+  {v.reg}
+</td>
   <td className="px-4 py-3">{v.mileage}</td>
 
   <td className="px-4 py-3">£{purchase}</td>
