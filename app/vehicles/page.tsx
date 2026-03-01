@@ -557,23 +557,13 @@ const handleDelete = async (id: string) => {
 >
    Sale Price
 </th>
-<th className="px-4 py-3 text-left whitespace-nowrap">
-  <div className="flex items-center gap-2">
-    <span className="text-xs font-semibold uppercase tracking-wide text-gray-600">
-      Status
-    </span>
 
-    <select
-      value={statusPageFilter}
-      onChange={(e) => setStatusPageFilter(e.target.value)}
-      className="border border-gray-300 rounded-md px-2 py-1 text-xs bg-white"
-    >
-      <option value="">All</option>
-      <option value="In Stock">In Stock</option>
-      <option value="Sold">Sold</option>
-      <option value="Not To Sell">Not To Sell</option>
-    </select>
-  </div>
+    <th className="px-4 py-3 text-left">Profit</th>
+    <th
+  onClick={() => handleSort("status")}
+  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
+   Status
 </th>
     <th
   onClick={() => handleSort("mot")}
