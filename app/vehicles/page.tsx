@@ -753,30 +753,30 @@ const days = calculateDaysInStock(v.created_at);
 
   {/* Profit */}
   <td className="px-4 py-3">
-  {v.status !== "Sold" ? (
-    <span className="text-gray-500">Awaiting Sale</span>
-  ) : profit >= 0 ? (
-    <span className="text-green-700 font-semibold">
-      £{profit}
-    </span>
-  ) : (
-    <span className="text-red-600 font-semibold">
-      £{profit}
-    </span>
-  )}
+ {v.status !== "Sold" ? (
+  <span className="text-gray-500">Awaiting Sale</span>
+) : profit >= 0 ? (
+  <span className="text-green-700 font-semibold">
+    £{profit.toFixed(2)}
+  </span>
+) : (
+  <span className="text-red-600 font-semibold">
+    £{profit.toFixed(2)}
+  </span>
+)}
 </td>
 <td className="px-4 py-3">
-  {v.status !== "Sold" ? (
-    <span className="text-gray-400">-</span>
-  ) : tradeMargin >= 0 ? (
-    <span className="text-green-700 font-semibold">
-      £{tradeMargin.toFixed(2)}
-    </span>
-  ) : (
-    <span className="text-red-600 font-semibold">
-      £{tradeMargin}
-    </span>
-  )}
+{v.status !== "Sold" ? (
+  <span className="text-gray-400">-</span>
+) : tradeMargin >= 0 ? (
+  <span className="text-green-700 font-semibold">
+    £{tradeMargin.toFixed(2)}
+  </span>
+) : (
+  <span className="text-red-600 font-semibold">
+    £{tradeMargin.toFixed(2)}
+  </span>
+)}
 </td>
   <td className="px-3 py-2">
   <select
