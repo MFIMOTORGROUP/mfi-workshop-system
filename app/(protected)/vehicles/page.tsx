@@ -571,19 +571,24 @@ const handleDelete = async (id: string) => {
 >
   Mileage
 </th>
-    <th
-  onClick={() => handleSort("purchase_price")}
-  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
->
-  Purchase
-</th>
+{role === "admin" && (
+  <th
+    onClick={() => handleSort("purchase_price")}
+    className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+  >
+    Purchase
+  </th>
+)}
 <th
   onClick={() => handleSort("repairs")}
   className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
 >
   Repairs
+
 </th>
-    <th className="px-4 py-3 text-left">Total Cost</th>
+    {role === "admin" && (
+  <th className="px-4 py-3 text-left">Total Cost</th>
+)}
 <th
   onClick={() => handleSort("cap_clean_price")}
   className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
@@ -604,10 +609,14 @@ const handleDelete = async (id: string) => {
    Sale Price
 </th>
 
-    <th className="px-4 py-3 text-left">Sale Profit</th>
-    <th className="px-4 py-3 text-left">
-  Trade Profit
-</th>
+    {role === "admin" && (
+  <th className="px-4 py-3 text-left">Sale Profit</th>
+)}
+{role === "admin" && (
+  <th className="px-4 py-3 text-left">
+    Trade Profit
+  </th>
+)}
    <th className="px-4 py-3 text-left">
   <div className="flex flex-col gap-1">
     <span className="text-xs font-semibold uppercase tracking-wide text-gray-600">
@@ -701,7 +710,9 @@ const days = calculateDaysInStock(v.created_at);
 </td>
   <td className="px-4 py-3">{v.mileage}</td>
 
+  {role === "admin" && (
   <td className="px-4 py-3">£{purchase}</td>
+)}
 <td className="px-4 py-3">
   <a
     href={`/jobcards?vehicle=${v.id}`}
@@ -710,7 +721,9 @@ const days = calculateDaysInStock(v.created_at);
     £{repairs}
   </a>
 </td>
+  {role === "admin" && (
   <td className="px-4 py-3 font-bold">£{totalCost}</td>
+)}
 
   <td className="px-4 py-3">£{v.cap_clean_price}</td>
   <td className="px-4 py-3">£{v.cap_live_price}</td>
@@ -771,6 +784,7 @@ const days = calculateDaysInStock(v.created_at);
 </td>
 
   {/* Profit */}
+  {role === "admin" && (
   <td className="px-4 py-3">
  {v.status !== "Sold" ? (
   <span className="text-gray-500">Awaiting Sale</span>
@@ -784,19 +798,22 @@ const days = calculateDaysInStock(v.created_at);
   </span>
 )}
 </td>
-<td className="px-4 py-3">
-{v.status !== "Sold" ? (
-  <span className="text-gray-400">-</span>
-) : tradeMargin >= 0 ? (
-  <span className="text-green-700 font-semibold">
-    £{tradeMargin.toFixed(2)}
-  </span>
-) : (
-  <span className="text-red-600 font-semibold">
-    £{tradeMargin.toFixed(2)}
-  </span>
+  )}
+{role === "admin" && (
+  <td className="px-4 py-3">
+    {v.status !== "Sold" ? (
+      <span className="text-gray-400">-</span>
+    ) : tradeMargin >= 0 ? (
+      <span className="text-green-700 font-semibold">
+        £{tradeMargin.toFixed(2)}
+      </span>
+    ) : (
+      <span className="text-red-600 font-semibold">
+        £{tradeMargin.toFixed(2)}
+      </span>
+    )}
+  </td>
 )}
-</td>
   <td className="px-3 py-2">
   <select
     value={v.status}
