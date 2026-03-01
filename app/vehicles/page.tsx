@@ -531,15 +531,25 @@ const handleDelete = async (id: string) => {
   Make
 </th>
 
-<th className="sticky left-[150px] w-[180px] min-w-[180px] z-40 bg-gray-50 px-4 py-3 text-left">
+<th
+  onClick={() => handleSort("model")}
+  className="sticky left-[150px] w-[180px] min-w-[180px] z-40 bg-gray-50 px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
   Model
 </th>
 
-<th className="sticky left-[330px] w-[130px] min-w-[130px] z-40 bg-gray-50 px-4 py-3 text-left">
+<th
+  onClick={() => handleSort("reg")}
+  className="sticky left-[330px] w-[130px] min-w-[130px] z-40 bg-gray-50 px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
   Reg
-  
 </th>
-    <th className="px-4 py-3 text-left">Mileage</th>
+    <th
+  onClick={() => handleSort("mileage")}
+  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
+  Mileage
+</th>
     <th className="px-4 py-3 text-left">Purchase</th>
     <th className="px-4 py-3 text-left">Repairs</th>
     <th className="px-4 py-3 text-left">Total Cost</th>
