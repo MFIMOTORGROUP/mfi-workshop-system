@@ -11,45 +11,51 @@ export default function ProtectedLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
 
+  // ✅ Check user ONLY ONCE
   useEffect(() => {
-  const checkAccess = async () => {
-    const { data: userData } = await supabase.auth.getUser();
+    const checkUser = async () => {
+      const { data: userData } = await supabase.auth.getUser();
 
-    if (!userData.user) {
-      router.replace("/login");
-      return;
-    }
+      if (!userData.user) {
+        router.replace("/login");
+        return;
+      }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", userData.user.id)
-      .single();
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", userData.user.id)
+        .single();
 
-    const role = profile?.role;
+      setRole(profile?.role ?? null);
+      setLoading(false);
+    };
+
+    checkUser();
+  }, []); // 🚨 no pathname here
+
+  // ✅ Handle mechanic restriction separately
+  useEffect(() => {
+    if (!role) return;
 
     if (role === "mechanic" && !pathname.startsWith("/jobcards")) {
       router.replace("/jobcards");
-      return;
     }
+  }, [role, pathname]);
 
-    setLoading(false);
-  };
-
-  checkAccess();
-}, [pathname]);
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push("/login");
+    router.replace("/login");
   };
 
   if (loading) return null;
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* TOP NAVBAR */}
       <div className="flex justify-between items-center px-6 py-4 bg-white shadow">
         <h1 className="text-lg font-semibold">MFI Workshop System</h1>
 
@@ -61,7 +67,6 @@ export default function ProtectedLayout({
         </button>
       </div>
 
-      {/* PAGE CONTENT */}
       <div className="p-6">{children}</div>
     </div>
   );
