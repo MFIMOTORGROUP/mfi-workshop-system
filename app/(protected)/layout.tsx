@@ -15,17 +15,17 @@ export default function ProtectedLayout({
 
   useEffect(() => {
     const checkAccess = async () => {
-      const { data: userData } = await supabase.auth.getUser();
+const { data: { session } } = await supabase.auth.getSession();
 
-      if (!userData.user) {
-        router.push("/login");
-        return;
-      }
+if (!session) {
+  router.push("/login");
+  return;
+}
 
       const { data: profile } = await supabase
         .from("profiles")
         .select("role")
-        .eq("id", userData.user.id)
+        .eq("id", session.user.id)
         .single();
 
       const role = profile?.role;
