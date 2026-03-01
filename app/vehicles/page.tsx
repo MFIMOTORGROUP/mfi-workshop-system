@@ -558,9 +558,9 @@ const handleDelete = async (id: string) => {
    Sale Price
 </th>
 
-    <th className="px-4 py-3 text-left">Profit</th>
+    <th className="px-4 py-3 text-left">Sale Profit</th>
     <th className="px-4 py-3 text-left">
-  Trade Difference
+  Trade Profit
 </th>
    <th className="px-4 py-3 text-left">
   <div className="flex flex-col gap-1">
