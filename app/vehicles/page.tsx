@@ -495,21 +495,77 @@ const handleDelete = async (id: string) => {
 >
   Mileage
 </th>
-    <th className="px-4 py-3 text-left">Purchase</th>
-    <th className="px-4 py-3 text-left">Repairs</th>
+    <th
+  onClick={() => handleSort("purchase_price")}
+  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
+  Purchase
+</th>
+<th
+  onClick={() => handleSort("repairs")}
+  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
+  Repairs
+</th>
     <th className="px-4 py-3 text-left">Total Cost</th>
-    <th className="px-4 py-3 text-left">CAP Clean</th>
-    <th className="px-4 py-3 text-left">CAP Live</th>
+<th
+  onClick={() => handleSort("cap_clean_price")}
+  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
+   CAP Clean
+</th>
+<th
+  onClick={() => handleSort("cap_live_price")}
+  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
+   CAP Live
+</th>
     <th className="px-4 py-3 text-left">CAP Check</th>
-    <th className="px-4 py-3 text-left">Sale Price</th>
+<th
+  onClick={() => handleSort("sale_price")}
+  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
+   Sale Price
+</th>
+
     <th className="px-4 py-3 text-left">Profit</th>
-    <th className="px-4 py-3 text-left">Status</th>
-    <th className="px-4 py-3 text-left">MOT</th>
+    <th
+  onClick={() => handleSort("status")}
+  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
+   Status
+</th>
+    <th
+  onClick={() => handleSort("MOT")}
+  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
+   MOT
+</th>
     <th className="px-4 py-3 text-left">Days</th>
-    <th className="px-4 py-3 text-left">V5C</th>
-    <th className="px-4 py-3 text-left">Transmission</th>
-    <th className="px-4 py-3 text-left">Grade</th>
-    <th className="px-4 py-3 text-left">Keys</th>
+    <th
+  onClick={() => handleSort("v5c")}
+  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
+   V5C
+</th>
+    <th
+  onClick={() => handleSort("Transmission")}
+  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
+   Transmission
+</th>
+<th
+  onClick={() => handleSort("Grade")}
+  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
+   Grade
+</th>
+<th
+  onClick={() => handleSort("keys_count")}
+  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
+   Keys
+</th>
     <th className="px-4 py-3 text-left">Actions</th>
   </tr>
   <tr className="bg-gray-100 text-xs">
