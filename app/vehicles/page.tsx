@@ -10,23 +10,6 @@ export default function VehiclesPage() {
   key: string;
   direction: "asc" | "desc";
 } | null>(null);
-const [filters, setFilters] = useState({
-  make: "",
-  model: "",
-  reg: "",
-  mileage: "",
-  purchase_price: "",
-  repairs: "",
-  sale_price: "",
-  cap_clean_price: "",
-  cap_live_price: "",
-  status: "",
-  mot: "",
-  transmission: "",
-  grade: "",
-  v5c_status: "",
-  keys_count: "",
-});
   const [editingSaleId, setEditingSaleId] = useState<string | null>(null);
 const [tempSaleValue, setTempSaleValue] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -71,22 +54,7 @@ const fetchVehicles = async () => {
     fetchVehicles();
   }, []);
 
- useEffect(() => {
-  let temp = [...vehicles];
-
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value) {
-      temp = temp.filter((v) =>
-        String(v[key] ?? "")
-          .toLowerCase()
-          .includes(value.toLowerCase())
-      );
-    }
-  });
-
-  setFilteredVehicles(temp);
-}, [filters, vehicles]);
-
+ 
 const handleSave = async () => {
   const purchase = Number(formData.purchase_price);
   const sale = Number(formData.sale_price);
@@ -254,30 +222,7 @@ const handleDelete = async (id: string) => {
 
     {/* Controls */}
     <div className="flex items-center justify-between mb-8">
-      <div className="flex gap-4">
-        <input
-  placeholder="Search by make..."
-  value={filters.make}
-  onChange={(e) =>
-    setFilters({ ...filters, make: e.target.value })
-  }
-  className="border border-gray-300 px-3 py-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-black"
-/>
-
-<select
-  value={filters.status}
-  onChange={(e) =>
-    setFilters({ ...filters, status: e.target.value })
-  }
-  className="border border-gray-300 px-3 py-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-black"
->
-  <option value="">All</option>
-  <option value="In Stock">In Stock</option>
-  <option value="Sold">Sold</option>
-  <option value="Not To Sell">Not To Sell</option>
-</select>      </div>
-
-      <div className="flex gap-3">
+            <div className="flex gap-3">
         <button
           onClick={exportToCSV}
           className="border border-gray-300 px-4 py-2 text-sm rounded-md hover:bg-gray-50"
@@ -569,36 +514,13 @@ const handleDelete = async (id: string) => {
   </tr>
   <tr className="bg-gray-100 text-xs">
   <th className="sticky left-0 w-[150px] min-w-[150px] bg-white z-30">
-    <input
-      value={filters.make}
-      onChange={(e) =>
-        setFilters({ ...filters, make: e.target.value })
-      }
-      className="w-full border px-2 py-1"
-      placeholder="Filter"
-    />
   </th>
 
   <th className="sticky left-[150px] w-[180px] min-w-[180px] bg-white z-30">
-    <input
-      value={filters.model}
-      onChange={(e) =>
-        setFilters({ ...filters, model: e.target.value })
-      }
-      className="w-full border px-2 py-1"
-      placeholder="Filter"
-    />
   </th>
 
   <th className="sticky left-[330px] w-[130px] min-w-[130px] bg-white z-30">
-    <input
-      value={filters.reg}
-      onChange={(e) =>
-        setFilters({ ...filters, reg: e.target.value })
-      }
-      className="w-full border px-2 py-1"
-      placeholder="Filter"
-    />
+
   </th>
 
   <th colSpan={17}></th>
