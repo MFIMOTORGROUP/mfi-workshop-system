@@ -160,19 +160,72 @@ const handleDelete = async (id: string) => {
     );
   };
 
-  const exportToCSV = () => {
+ const exportToCSV = () => {
   if (filteredVehicles.length === 0) return;
 
-  const headers = Object.keys(filteredVehicles[0]);
+  const headers = [
+    "Make",
+    "Model",
+    "Reg",
+    "Mileage",
+    "Purchase",
+    "Repairs",
+    "Total Cost",
+    "CAP Clean",
+    "CAP Live",
+    "CAP Check",
+    "Sale Price",
+    "Profit",
+    "Trade vs CAP",
+    "Status",
+    "MOT",
+    "Days In Stock",
+    "Transmission",
+    "Grade",
+    "V5C",
+    "Keys",
+  ];
 
-  const rows = filteredVehicles.map((vehicle) =>
-    headers.map((header) => `"${vehicle[header] ?? ""}"`)
-  );
+  const rows = filteredVehicles.map((v) => {
+    const purchase = Number(v.purchase_price || 0);
+    const repairs = Number(v.repairs || 0);
+    const sale = Number(v.sale_price || 0);
+    const capLive = Number(v.cap_live_price || 0);
+
+    const totalCost = purchase + repairs;
+    const profit = sale - totalCost;
+    const capCheck = capLive - totalCost;
+    const tradeMargin = sale - capLive;
+    const days = calculateDaysInStock(v.created_at);
+
+    return [
+      v.make,
+      v.model,
+      v.reg,
+      v.mileage,
+      purchase,
+      repairs,
+      totalCost,
+      v.cap_clean_price,
+      v.cap_live_price,
+      capCheck,
+      sale,
+      profit,
+      tradeMargin,
+      v.status,
+      v.mot,
+      days,
+      v.transmission,
+      v.grade,
+      v.v5c_status,
+      v.keys_count,
+    ];
+  });
 
   const csv =
     headers.join(",") +
     "\n" +
-    rows.map((row) => row.join(",")).join("\n");
+    rows.map((r) => r.map((x) => `"${x ?? ""}"`).join(",")).join("\n");
 
   const blob = new Blob([csv], { type: "text/csv" });
   const link = document.createElement("a");
@@ -749,7 +802,26 @@ const days = calculateDaysInStock(v.created_at);
     <option value="Not To Sell">Not To Sell</option>
   </select>
 </td>
-  <td className="px-4 py-3">{v.mot ? formatDate(v.mot) : "-"}</td>
+  <td className="px-4 py-3">
+  {v.mot ? (() => {
+    const motDate = new Date(v.mot);
+    const today = new Date();
+
+    if (motDate < today) {
+      return (
+        <span className="text-red-600 font-semibold">
+          {formatDate(v.mot)}
+        </span>
+      );
+    }
+
+    return (
+      <span className="text-green-700">
+        {formatDate(v.mot)}
+      </span>
+    );
+  })() : "-"}
+</td>
   <td className="px-4 py-3 text-center">{days}</td>
   <td className="px-4 py-3">
   {v.v5c_status === "Present" && (
