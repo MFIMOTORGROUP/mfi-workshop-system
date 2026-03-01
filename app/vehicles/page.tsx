@@ -35,8 +35,9 @@ const [tempSaleValue, setTempSaleValue] = useState("");
 
 const fetchVehicles = async () => {
   const { data, error } = await supabase
-    .from("vehicles")
-    .select("*");
+ .from("vehicles")
+.select("*")
+.order("created_at", { ascending: false });
 
   console.log("DATA:", data);
   console.log("ERROR:", error);
