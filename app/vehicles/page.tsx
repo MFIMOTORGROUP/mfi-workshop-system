@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+const [searchMake, setSearchMake] = useState("");
 import { supabase } from "../lib/supabase";
 
 export default function VehiclesPage() {
@@ -54,7 +55,16 @@ const fetchVehicles = async () => {
   useEffect(() => {
     fetchVehicles();
   }, []);
-
+useEffect(() => {
+  if (!searchMake) {
+    setFilteredVehicles(vehicles);
+  } else {
+    const filtered = vehicles.filter((v) =>
+      v.make?.toLowerCase().includes(searchMake.toLowerCase())
+    );
+    setFilteredVehicles(filtered);
+  }
+}, [searchMake, vehicles]);
  
 const handleSave = async () => {
   const purchase = Number(formData.purchase_price);
@@ -222,6 +232,14 @@ const handleDelete = async (id: string) => {
     <h1 className="text-2xl font-semibold mb-8">Vehicle Stock</h1>
 
     {/* Controls */}
+<div className="flex items-center gap-4 mb-4">
+  <input
+    placeholder="Search by make..."
+    value={searchMake}
+    onChange={(e) => setSearchMake(e.target.value)}
+    className="border border-gray-300 px-3 py-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-black"
+  />
+</div>
     <div className="flex items-center justify-between mb-8">
             <div className="flex gap-3">
         <button
