@@ -552,7 +552,23 @@ const days = calculateDaysInStock(v.created_at);
     )}
   </td>
 
-  <td className="px-4 py-3">£{sale}</td>
+  <td className="px-4 py-3">
+  <input
+    type="number"
+    value={v.sale_price || ""}
+    onChange={async (e) => {
+      const newValue = e.target.value;
+
+      await supabase
+        .from("vehicles")
+        .update({ sale_price: Number(newValue) })
+        .eq("id", v.id);
+
+      fetchVehicles();
+    }}
+    className="w-24 border border-gray-300 rounded-md px-2 py-1 text-sm"
+  />
+</td>
 
   {/* Profit */}
   <td className="px-4 py-3">
