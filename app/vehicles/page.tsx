@@ -466,8 +466,9 @@ const handleDelete = async (id: string) => {
 )}
   {/* TABLE */}
 <div className="w-full border-t border-gray-200">
-<div className="max-h-[600px] overflow-x-auto overflow-y-auto">
-  <table className="w-full text-sm [&_td]:px-3 [&_td]:py-2 [&_th]:px-3 [&_th]:py-2">
+<div className="overflow-x-auto">
+  <div className="max-h-[600px] overflow-y-auto">
+  <table className="min-w-max text-sm [&_td]:px-3 [&_td]:py-2 [&_th]:px-3 [&_th]:py-2">
        <thead className="sticky top-0 z-20 bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
   <tr>
 <th
@@ -537,26 +538,26 @@ const handleDelete = async (id: string) => {
    Status
 </th>
     <th
-  onClick={() => handleSort("MOT")}
+  onClick={() => handleSort("mot")}
   className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
 >
    MOT
 </th>
     <th className="px-4 py-3 text-left">Days</th>
     <th
-  onClick={() => handleSort("v5c")}
+  onClick={() => handleSort("v5c_status")}
   className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
 >
    V5C
 </th>
     <th
-  onClick={() => handleSort("Transmission")}
+  onClick={() => handleSort("transmission")}
   className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
 >
    Transmission
 </th>
 <th
-  onClick={() => handleSort("Grade")}
+  onClick={() => handleSort("grade")}
   className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
 >
    Grade
@@ -774,8 +775,10 @@ const days = calculateDaysInStock(v.created_at);
           })}
         </tbody>
             </table>
+              </div>
+</div>
     </div>
   </div>
-</div>
+
       );
 }
