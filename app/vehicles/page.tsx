@@ -486,7 +486,7 @@ const handleDelete = async (id: string) => {
     <th className="px-4 py-3 text-left">CAP Clean</th>
     <th className="px-4 py-3 text-left">CAP Live</th>
     <th className="px-4 py-3 text-left">CAP Check</th>
-    <th className="px-4 py-3 text-left">Sold Price</th>
+    <th className="px-4 py-3 text-left">Sale Price</th>
     <th className="px-4 py-3 text-left">Profit</th>
     <th className="px-4 py-3 text-left">Status</th>
     <th className="px-4 py-3 text-left">MOT</th>
