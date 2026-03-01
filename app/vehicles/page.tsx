@@ -10,6 +10,7 @@ export default function VehiclesPage() {
   key: string;
   direction: "asc" | "desc";
 } | null>(null);
+const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [editingSaleId, setEditingSaleId] = useState<string | null>(null);
 const [tempSaleValue, setTempSaleValue] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -469,11 +470,52 @@ const handleDelete = async (id: string) => {
   <table className="w-full text-sm [&_td]:px-3 [&_td]:py-2 [&_th]:px-3 [&_th]:py-2">
        <thead className="sticky top-0 z-20 bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
   <tr>
-<th
-  onClick={() => handleSort("make")}
-  className="sticky left-0 w-[150px] min-w-[150px] z-40 bg-gray-50 px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
->
-  Make
+<th className="sticky left-0 w-[150px] min-w-[150px] z-40 bg-gray-50 px-4 py-3 text-left relative">
+
+  <div className="flex items-center justify-between">
+
+    <span>Make</span>
+
+    {/* Filter Icon */}
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        setActiveMenu(activeMenu === "make" ? null : "make");
+      }}
+      className="text-xs hover:text-black"
+    >
+      ⏷
+    </button>
+
+  </div>
+
+  {/* Dropdown */}
+  {activeMenu === "make" && (
+    <div className="absolute right-2 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-50 text-sm">
+      
+      <button
+        onClick={() => {
+          handleSort("make");
+          setActiveMenu(null);
+        }}
+        className="block w-full text-left px-3 py-2 hover:bg-gray-100"
+      >
+        Sort A → Z
+      </button>
+
+      <button
+        onClick={() => {
+          handleSort("make");
+          setActiveMenu(null);
+        }}
+        className="block w-full text-left px-3 py-2 hover:bg-gray-100"
+      >
+        Sort Z → A
+      </button>
+
+    </div>
+  )}
+
 </th>
 
 <th
