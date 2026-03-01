@@ -57,29 +57,24 @@ const fetchVehicles = async () => {
     fetchVehicles();
   }, []);
 useEffect(() => {
-  if (!searchMake) {
-    setFilteredVehicles(vehicles);
-  } else {
-    const filtered = vehicles.filter((v) =>
+  let filtered = [...vehicles];
+
+  // Make search filter
+  if (searchMake) {
+    filtered = filtered.filter((v) =>
       v.make?.toLowerCase().includes(searchMake.toLowerCase())
     );
-    setFilteredVehicles(filtered);
   }
-}, [searchMake, vehicles]);
-useEffect(() => {
-  fetchVehicles();
-}, []);
 
-useEffect(() => {
-  if (!statusPageFilter) {
-    setFilteredVehicles(vehicles);
-  } else {
-    const filtered = vehicles.filter(
+  // Status dropdown filter
+  if (statusPageFilter) {
+    filtered = filtered.filter(
       (v) => v.status === statusPageFilter
     );
-    setFilteredVehicles(filtered);
   }
-}, [statusPageFilter, vehicles]);
+
+  setFilteredVehicles(filtered);
+}, [searchMake, statusPageFilter, vehicles]);
  
 const handleSave = async () => {
   const purchase = Number(formData.purchase_price);
@@ -564,11 +559,17 @@ const handleDelete = async (id: string) => {
 </th>
 
     <th className="px-4 py-3 text-left">Profit</th>
-    <th
-  onClick={() => handleSort("status")}
-  className="px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
->
-   Status
+   <th className="px-4 py-3 text-left">
+  <select
+    value={statusPageFilter}
+    onChange={(e) => setStatusPageFilter(e.target.value)}
+    className="border border-gray-300 rounded-md px-2 py-1 text-xs bg-white"
+  >
+    <option value="">All</option>
+    <option value="In Stock">In Stock</option>
+    <option value="Sold">Sold</option>
+    <option value="Not To Sell">Not To Sell</option>
+  </select>
 </th>
     <th
   onClick={() => handleSort("mot")}
