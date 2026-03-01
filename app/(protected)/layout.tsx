@@ -22,7 +22,6 @@ export default function ProtectedLayout({
         return;
       }
 
-      // Get role from profiles table
       const { data: profile } = await supabase
         .from("profiles")
         .select("role")
@@ -31,16 +30,12 @@ export default function ProtectedLayout({
 
       const role = profile?.role;
 
-      // 🔒 ROLE RULES
       if (role === "mechanic") {
-        // Mechanic can only access jobcards
         if (!pathname.startsWith("/jobcards")) {
           router.push("/jobcards");
           return;
         }
       }
-
-      // Admin & staff can access everything for now
 
       setLoading(false);
     };
@@ -48,7 +43,29 @@ export default function ProtectedLayout({
     checkAccess();
   }, [pathname, router]);
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
+
   if (loading) return null;
 
-  return <>{children}</>;
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* TOP NAVBAR */}
+      <div className="flex justify-between items-center px-6 py-4 bg-white shadow">
+        <h1 className="text-lg font-semibold">MFI Workshop System</h1>
+
+        <button
+          onClick={handleLogout}
+          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+        >
+          Logout
+        </button>
+      </div>
+
+      {/* PAGE CONTENT */}
+      <div className="p-6">{children}</div>
+    </div>
+  );
 }
