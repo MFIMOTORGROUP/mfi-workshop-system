@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 
 export default function VehiclesPage() {
+  const [role, setRole] = useState<string | null>(null);
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [filteredVehicles, setFilteredVehicles] = useState<any[]>([]);
   const [statusPageFilter, setStatusPageFilter] = useState("");
@@ -56,6 +57,23 @@ const fetchVehicles = async () => {
   useEffect(() => {
     fetchVehicles();
   }, []);
+  useEffect(() => {
+  const getRole = async () => {
+    const { data: userData } = await supabase.auth.getUser();
+
+    if (!userData.user) return;
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userData.user.id)
+      .single();
+
+    setRole(profile?.role || null);
+  };
+
+  getRole();
+}, []);
 useEffect(() => {
   let filtered = [...vehicles];
 
@@ -266,6 +284,7 @@ const handleDelete = async (id: string) => {
 };
   return (
   <div className="py-6">
+     <p>Logged in as: {role}</p>
     <h1 className="text-2xl font-semibold mb-8">Vehicle Stock</h1>
 
     {/* Controls */}
