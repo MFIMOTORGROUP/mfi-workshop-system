@@ -559,6 +559,9 @@ const handleDelete = async (id: string) => {
 </th>
 
     <th className="px-4 py-3 text-left">Profit</th>
+    <th className="px-4 py-3 text-left">
+  Trade Difference
+</th>
    <th className="px-4 py-3 text-left">
   <div className="flex flex-col gap-1">
     <span className="text-xs font-semibold uppercase tracking-wide text-gray-600">
@@ -634,6 +637,7 @@ const capLive = Number(v.cap_live_price || 0);
 const totalCost = purchase + repairs;
 const profit = sale - totalCost;
 const capCheckValue = capLive - totalCost;
+const tradeMargin = sale - capLive;
 const days = calculateDaysInStock(v.created_at);
             return (
 <tr key={v.id} className="border-b border-gray-300 hover:bg-gray-50">
@@ -734,7 +738,19 @@ const days = calculateDaysInStock(v.created_at);
     </span>
   )}
 </td>
-
+<td className="px-4 py-3">
+  {v.status !== "Sold" ? (
+    <span className="text-gray-400">-</span>
+  ) : tradeMargin >= 0 ? (
+    <span className="text-green-700 font-semibold">
+      £{tradeMargin}
+    </span>
+  ) : (
+    <span className="text-red-600 font-semibold">
+      £{tradeMargin}
+    </span>
+  )}
+</td>
   <td className="px-3 py-2">
   <select
     value={v.status}
