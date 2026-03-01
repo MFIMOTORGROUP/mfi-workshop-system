@@ -161,51 +161,25 @@ const handleDelete = async (id: string) => {
   };
 
   const exportToCSV = () => {
-    const headers = [
-      "Make",
-      "Model",
-      "Reg",
-      "Mileage",
-      "Purchase Price",
-      "CAP Clean",
-      "CAP Live",
-      "Status",
-      "MOT",
-      "Transmission",
-      "Grade",
-      "V5C",
-      "Keys",
-      "Sold Date",
-    ];
+  if (filteredVehicles.length === 0) return;
 
-    const rows = filteredVehicles.map((v) => [
-      v.make,
-      v.model,
-      v.reg,
-      v.mileage,
-      v.purchase_price,
-      v.cap_clean_price,
-      v.cap_live_price,
-      v.status,
-      v.mot,
-      v.transmission,
-      v.grade,
-      v.v5c_status,
-      v.keys_count,
-      v.sold_date,
-    ]);
+  const headers = Object.keys(filteredVehicles[0]);
 
-    const csv =
-      headers.join(",") +
-      "\n" +
-      rows.map((r) => r.map((x) => `"${x ?? ""}"`).join(",")).join("\n");
+  const rows = filteredVehicles.map((vehicle) =>
+    headers.map((header) => `"${vehicle[header] ?? ""}"`)
+  );
 
-    const blob = new Blob([csv], { type: "text/csv" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "vehicle_stock.csv";
-    link.click();
-  };
+  const csv =
+    headers.join(",") +
+    "\n" +
+    rows.map((row) => row.join(",")).join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "vehicle_stock.csv";
+  link.click();
+};
 
   const handleSort = (key: string) => {
   let direction: "asc" | "desc" = "asc";
