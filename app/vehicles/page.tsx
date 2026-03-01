@@ -466,11 +466,11 @@ const handleDelete = async (id: string) => {
 )}
   {/* TABLE */}
 <div className="w-full border-t border-gray-200">
-<div className="overflow-x-auto">
-  <div className="max-h-[600px] overflow-y-auto">
-  <table className="min-w-max text-sm [&_td]:px-3 [&_td]:py-2 [&_th]:px-3 [&_th]:py-2">
-       <thead className="sticky top-0 z-20 bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
-  <tr>
+  <div className="overflow-x-auto">
+    <div className="max-h-[600px] overflow-y-auto">
+
+      <table className="min-w-[1600px] text-sm [&_td]:px-3 [&_td]:py-2 [&_th]:px-3 [&_th]:py-2">
+        <thead className="sticky top-0 z-50 bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">  <tr>
 <th
   onClick={() => handleSort("make")}
   className="sticky left-0 w-[150px] min-w-[150px] z-40 bg-gray-50 px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
