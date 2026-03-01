@@ -8,8 +8,11 @@ export default function VehiclesPage() {
   const [filteredVehicles, setFilteredVehicles] = useState<any[]>([]);
   const [filterMake, setFilterMake] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [editingSaleId, setEditingSaleId] = useState<string | null>(null);
+const [tempSaleValue, setTempSaleValue] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<any>(null);
+  
 
   const emptyForm = {
     make: "",
@@ -553,21 +556,45 @@ const days = calculateDaysInStock(v.created_at);
   </td>
 
   <td className="px-4 py-3">
-  <input
-    type="number"
-    value={v.sale_price || ""}
-    onChange={async (e) => {
-      const newValue = e.target.value;
+  {editingSaleId === v.id ? (
+    <input
+      type="number"
+      value={tempSaleValue}
+      autoFocus
+      onChange={(e) => setTempSaleValue(e.target.value)}
+      onBlur={async () => {
+        await supabase
+          .from("vehicles")
+          .update({ sale_price: Number(tempSaleValue) })
+          .eq("id", v.id);
 
-      await supabase
-        .from("vehicles")
-        .update({ sale_price: Number(newValue) })
-        .eq("id", v.id);
+        setEditingSaleId(null);
+        fetchVehicles();
+      }}
+      onKeyDown={async (e) => {
+        if (e.key === "Enter") {
+          await supabase
+            .from("vehicles")
+            .update({ sale_price: Number(tempSaleValue) })
+            .eq("id", v.id);
 
-      fetchVehicles();
-    }}
-    className="w-24 border border-gray-300 rounded-md px-2 py-1 text-sm"
-  />
+          setEditingSaleId(null);
+          fetchVehicles();
+        }
+      }}
+      className="w-24 border border-gray-300 rounded-md px-2 py-1 text-sm"
+    />
+  ) : (
+    <span
+      onClick={() => {
+        setEditingSaleId(v.id);
+        setTempSaleValue(String(v.sale_price || ""));
+      }}
+      className="cursor-pointer hover:text-blue-600"
+    >
+      £{v.sale_price || 0}
+    </span>
+  )}
 </td>
 
   {/* Profit */}
