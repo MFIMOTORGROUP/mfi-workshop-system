@@ -770,7 +770,7 @@ const days = calculateDaysInStock(v.created_at);
     <span className="text-gray-400">-</span>
   ) : tradeMargin >= 0 ? (
     <span className="text-green-700 font-semibold">
-      £{tradeMargin}
+      £{tradeMargin.toFixed(2)}
     </span>
   ) : (
     <span className="text-red-600 font-semibold">
