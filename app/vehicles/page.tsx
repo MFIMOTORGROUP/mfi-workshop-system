@@ -477,7 +477,7 @@ const handleDelete = async (id: string) => {
 
 <th className="sticky left-[330px] w-[130px] min-w-[130px] z-40 bg-gray-50 px-4 py-3 text-left">
   Reg
-  shadow-[4px_0_6px_-2px_rgba(0,0,0,0.1)]
+  
 </th>
     <th className="px-4 py-3 text-left">Mileage</th>
     <th className="px-4 py-3 text-left">Purchase</th>
