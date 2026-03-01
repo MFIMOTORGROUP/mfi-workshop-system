@@ -559,8 +559,8 @@ const handleDelete = async (id: string) => {
 </th>
 
     <th className="px-4 py-3 text-left">Profit</th>
-   <th className="px-4 py-3 text-left whitespace-nowrap">
-  <div className="flex items-center gap-2">
+   <th className="px-4 py-3 text-left">
+  <div className="flex flex-col gap-1">
     <span className="text-xs font-semibold uppercase tracking-wide text-gray-600">
       Status
     </span>
@@ -568,7 +568,7 @@ const handleDelete = async (id: string) => {
     <select
       value={statusPageFilter}
       onChange={(e) => setStatusPageFilter(e.target.value)}
-      className="border border-gray-300 rounded-md px-2 py-1 text-xs bg-white"
+      className="border border-gray-300 rounded-md px-2 py-1 text-xs bg-white w-full"
     >
       <option value="">All</option>
       <option value="In Stock">In Stock</option>
