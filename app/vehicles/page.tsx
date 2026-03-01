@@ -6,6 +6,10 @@ import { supabase } from "../lib/supabase";
 export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [filteredVehicles, setFilteredVehicles] = useState<any[]>([]);
+  const [sortConfig, setSortConfig] = useState<{
+  key: string;
+  direction: "asc" | "desc";
+} | null>(null);
 const [filters, setFilters] = useState({
   make: "",
   model: "",
@@ -214,6 +218,36 @@ const handleDelete = async (id: string) => {
     link.click();
   };
 
+  const handleSort = (key: string) => {
+  let direction: "asc" | "desc" = "asc";
+
+  if (
+    sortConfig &&
+    sortConfig.key === key &&
+    sortConfig.direction === "asc"
+  ) {
+    direction = "desc";
+  }
+
+  setSortConfig({ key, direction });
+
+  const sorted = [...filteredVehicles].sort((a, b) => {
+    const aValue = a[key] ?? "";
+    const bValue = b[key] ?? "";
+
+    if (!isNaN(aValue) && !isNaN(bValue)) {
+      return direction === "asc"
+        ? Number(aValue) - Number(bValue)
+        : Number(bValue) - Number(aValue);
+    }
+
+    return direction === "asc"
+      ? String(aValue).localeCompare(String(bValue))
+      : String(bValue).localeCompare(String(aValue));
+  });
+
+  setFilteredVehicles(sorted);
+};
   return (
   <div className="py-6">
     <h1 className="text-2xl font-semibold mb-8">Vehicle Stock</h1>
@@ -490,7 +524,10 @@ const handleDelete = async (id: string) => {
   <table className="w-full text-sm [&_td]:px-3 [&_td]:py-2 [&_th]:px-3 [&_th]:py-2">
        <thead className="sticky top-0 z-20 bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
   <tr>
-<th className="sticky left-0 w-[150px] min-w-[150px] z-40 bg-gray-50 px-4 py-3 text-left">
+<th
+  onClick={() => handleSort("make")}
+  className="sticky left-0 w-[150px] min-w-[150px] z-40 bg-gray-50 px-4 py-3 text-left cursor-pointer hover:bg-gray-100"
+>
   Make
 </th>
 
