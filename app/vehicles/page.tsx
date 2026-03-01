@@ -520,6 +520,42 @@ const handleDelete = async (id: string) => {
     <th className="px-4 py-3 text-left">Keys</th>
     <th className="px-4 py-3 text-left">Actions</th>
   </tr>
+  <tr className="bg-gray-100 text-xs">
+  <th className="sticky left-0 w-[150px] min-w-[150px] bg-white z-30">
+    <input
+      value={filters.make}
+      onChange={(e) =>
+        setFilters({ ...filters, make: e.target.value })
+      }
+      className="w-full border px-2 py-1"
+      placeholder="Filter"
+    />
+  </th>
+
+  <th className="sticky left-[150px] w-[180px] min-w-[180px] bg-white z-30">
+    <input
+      value={filters.model}
+      onChange={(e) =>
+        setFilters({ ...filters, model: e.target.value })
+      }
+      className="w-full border px-2 py-1"
+      placeholder="Filter"
+    />
+  </th>
+
+  <th className="sticky left-[330px] w-[130px] min-w-[130px] bg-white z-30">
+    <input
+      value={filters.reg}
+      onChange={(e) =>
+        setFilters({ ...filters, reg: e.target.value })
+      }
+      className="w-full border px-2 py-1"
+      placeholder="Filter"
+    />
+  </th>
+
+  <th colSpan={17}></th>
+</tr>
 </thead>
         <tbody>
           {filteredVehicles.map((v) => {
