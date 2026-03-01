@@ -6,6 +6,7 @@ import { supabase } from "../lib/supabase";
 export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [filteredVehicles, setFilteredVehicles] = useState<any[]>([]);
+  const [statusPageFilter, setStatusPageFilter] = useState("");
   const [searchMake, setSearchMake] = useState("");
   const [sortConfig, setSortConfig] = useState<{
   key: string;
@@ -65,6 +66,20 @@ useEffect(() => {
     setFilteredVehicles(filtered);
   }
 }, [searchMake, vehicles]);
+useEffect(() => {
+  fetchVehicles();
+}, []);
+
+useEffect(() => {
+  if (!statusPageFilter) {
+    setFilteredVehicles(vehicles);
+  } else {
+    const filtered = vehicles.filter(
+      (v) => v.status === statusPageFilter
+    );
+    setFilteredVehicles(filtered);
+  }
+}, [statusPageFilter, vehicles]);
  
 const handleSave = async () => {
   const purchase = Number(formData.purchase_price);
