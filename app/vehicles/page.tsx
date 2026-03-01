@@ -461,9 +461,11 @@ const handleDelete = async (id: string) => {
     </div>
   </div>
 )}
-    {/* TABLE */}
-    <div className="w-full overflow-x-auto border-t border-gray-200">
-      <table className="min-w-[1200px] text-sm [&_td]:px-3 [&_td]:py-2 [&_th]:px-3 [&_th]:py-2">
+  {/* TABLE */}
+<div className="w-full border-t border-gray-200">
+  <div className="overflow-x-auto">
+    <div className="max-h-[600px] overflow-y-auto">
+      <table className="min-w-[1400px] text-sm [&_td]:px-3 [&_td]:py-2 [&_th]:px-3 [&_th]:py-2">
         <thead className="bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
   <tr>
     <th className="px-4 py-3 text-left">Make</th>
@@ -630,8 +632,10 @@ const days = calculateDaysInStock(v.created_at);
             );
           })}
         </tbody>
-      </table>
+            </table>
     </div>
   </div>
-);
+</div>
+    </div>
+  );
 }
