@@ -19,7 +19,7 @@ export default function RootLayout({
             </h1>
 
             <nav className="flex items-center gap-8 text-sm font-medium">
-              <Link href="/" className="hover:text-gray-300 transition">
+              <Link href="/dashboard" className="hover:text-gray-300 transition">
                 Dashboard
               </Link>
 
