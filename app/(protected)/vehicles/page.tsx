@@ -75,25 +75,43 @@ const fetchVehicles = async () => {
   getRole();
 }, []);
 useEffect(() => {
-  let filtered = [...vehicles];
+  let updated = [...vehicles];
 
-  // Make search filter
+  // SEARCH
   if (searchMake) {
-    filtered = filtered.filter((v) =>
+    updated = updated.filter((v) =>
       v.make?.toLowerCase().includes(searchMake.toLowerCase())
     );
   }
 
-  // Status dropdown filter
+  // STATUS FILTER
   if (statusPageFilter) {
-    filtered = filtered.filter(
+    updated = updated.filter(
       (v) => v.status === statusPageFilter
     );
   }
 
-  setFilteredVehicles(filtered);
-}, [searchMake, statusPageFilter, vehicles]);
- 
+  // SORT
+  if (sortConfig) {
+    updated.sort((a, b) => {
+      const aValue = a[sortConfig.key] ?? "";
+      const bValue = b[sortConfig.key] ?? "";
+
+      if (!isNaN(aValue) && !isNaN(bValue)) {
+        return sortConfig.direction === "asc"
+          ? Number(aValue) - Number(bValue)
+          : Number(bValue) - Number(aValue);
+      }
+
+      return sortConfig.direction === "asc"
+        ? String(aValue).localeCompare(String(bValue))
+        : String(bValue).localeCompare(String(aValue));
+    });
+  }
+
+  setFilteredVehicles(updated);
+
+}, [vehicles, searchMake, statusPageFilter, sortConfig]); 
 const handleSave = async () => {
   const purchase = Number(formData.purchase_price);
   const sale = Number(formData.sale_price);
@@ -252,7 +270,7 @@ const handleDelete = async (id: string) => {
   link.click();
 };
 
-  const handleSort = (key: string) => {
+const handleSort = (key: string) => {
   let direction: "asc" | "desc" = "asc";
 
   if (
@@ -264,23 +282,6 @@ const handleDelete = async (id: string) => {
   }
 
   setSortConfig({ key, direction });
-
-  const sorted = [...filteredVehicles].sort((a, b) => {
-    const aValue = a[key] ?? "";
-    const bValue = b[key] ?? "";
-
-    if (!isNaN(aValue) && !isNaN(bValue)) {
-      return direction === "asc"
-        ? Number(aValue) - Number(bValue)
-        : Number(bValue) - Number(aValue);
-    }
-
-    return direction === "asc"
-      ? String(aValue).localeCompare(String(bValue))
-      : String(bValue).localeCompare(String(aValue));
-  });
-
-  setFilteredVehicles(sorted);
 };
   return (
   <div className="py-6">
