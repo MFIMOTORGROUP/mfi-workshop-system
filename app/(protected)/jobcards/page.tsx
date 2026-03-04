@@ -6,6 +6,7 @@ import { supabase } from "../../lib/supabase";
 
 export default function JobCardsPage() {
   const [vehicles, setVehicles] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [jobCards, setJobCards] = useState<any[]>([]);
 const [editingJob, setEditingJob] = useState<any>(null);
   const [selectedVehicle, setSelectedVehicle] = useState("");
@@ -104,23 +105,31 @@ if (error) {
       .eq("id", selectedVehicle)
       .single();
 
-    if (vehicle) {
-      const newRepairs = (vehicle.repairs || 0) + total;
+   if (vehicle) {
+  // Get all completed jobs for this vehicle
+  const { data: allJobs } = await supabase
+    .from("job_cards")
+    .select("total_cost")
+    .eq("vehicle_id", selectedVehicle)
+    .eq("status", "Completed");
 
-      const newProfit =
-        (vehicle.sale_price || 0) -
-        ((vehicle.purchase_price || 0) + newRepairs);
+  const totalRepairs =
+    allJobs?.reduce((sum, job) => sum + (job.total_cost || 0), 0) || 0;
 
-      await supabase
-        .from("vehicles")
-        .update({
-          repairs: newRepairs,
-          profit: newProfit,
-        })
-        .eq("id", selectedVehicle);
-    }
+  const newProfit =
+    (vehicle.sale_price || 0) -
+    ((vehicle.purchase_price || 0) + totalRepairs);
 
-    // Reset form
+  await supabase
+    .from("vehicles")
+    .update({
+      repairs: totalRepairs,
+      profit: newProfit,
+    })
+    .eq("id", selectedVehicle);
+}
+
+        // Reset form
     setSelectedVehicle("");
     setDescription("");
     setLabour("");
@@ -233,7 +242,14 @@ if (error) {
           </button>
         </div>
       </div>
-
+<div className="mb-4">
+  <input
+    placeholder="Search by reg, make or model..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="border border-gray-300 px-3 py-2 rounded-md text-sm w-80"
+  />
+</div>
       {/* Job Cards Table */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <table className="min-w-full text-sm">
@@ -250,7 +266,19 @@ if (error) {
           </thead>
 
           <tbody>
-            {jobCards.map((job) => (
+            {jobCards
+  .filter((job) => {
+    if (!searchTerm) return true;
+
+    const search = searchTerm.toLowerCase();
+
+    return (
+      job.vehicles?.reg?.toLowerCase().includes(search) ||
+      job.vehicles?.make?.toLowerCase().includes(search) ||
+      job.vehicles?.model?.toLowerCase().includes(search)
+    );
+  })
+  .map((job) => (
               <tr
                 key={job.id}
                 className="border-t border-gray-100 hover:bg-gray-50"
