@@ -6,6 +6,7 @@ import { supabase } from "../../lib/supabase";
 
 export default function JobCardsPage() {
   const [vehicles, setVehicles] = useState<any[]>([]);
+  const [vehicleSearch, setVehicleSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [jobCards, setJobCards] = useState<any[]>([]);
 const [editingJob, setEditingJob] = useState<any>(null);
@@ -182,18 +183,40 @@ if (error) {
       {/* Form */}
       <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm mb-8">
         <div className="grid grid-cols-2 gap-4">
-          <select
-            value={selectedVehicle}
-            onChange={(e) => setSelectedVehicle(e.target.value)}
-            className="border border-gray-300 px-3 py-2 rounded-md text-sm"
-          >
-            <option value="">Select Vehicle</option>
-            {vehicles.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.make} {v.model} - {v.reg}
-              </option>
-            ))}
-          </select>
+          <div className="flex flex-col gap-2">
+  <input
+    placeholder="Search vehicle by reg, make or model..."
+    value={vehicleSearch}
+    onChange={(e) => setVehicleSearch(e.target.value)}
+    className="border border-gray-300 px-3 py-2 rounded-md text-sm"
+  />
+
+  <select
+    value={selectedVehicle}
+    onChange={(e) => setSelectedVehicle(e.target.value)}
+    className="border border-gray-300 px-3 py-2 rounded-md text-sm"
+  >
+    <option value="">Select Vehicle</option>
+    {vehicles
+      .filter((v) => {
+        if (!vehicleSearch) return true;
+
+        const search = vehicleSearch.toLowerCase();
+
+        return (
+          v.reg?.toLowerCase().includes(search) ||
+          v.make?.toLowerCase().includes(search) ||
+          v.model?.toLowerCase().includes(search)
+        );
+      })
+      .map((v) => (
+        <option key={v.id} value={v.id}>
+          {v.make} {v.model} - {v.reg}
+        </option>
+      ))}
+  </select>
+</div>
+            
 
           <input
             placeholder="Job Description"
