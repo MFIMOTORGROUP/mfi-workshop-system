@@ -131,8 +131,7 @@ if (error) {
 }
 
         // Reset form
-    setSelectedVehicle("");
-    setDescription("");
+        setDescription("");
     setLabour("");
     setParts("");
     setStatus("Pending");
