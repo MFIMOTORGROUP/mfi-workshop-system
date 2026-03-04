@@ -7,7 +7,7 @@ import { supabase } from "../../lib/supabase";
 export default function JobCardsPage() {
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [jobCards, setJobCards] = useState<any[]>([]);
-
+const [editingJob, setEditingJob] = useState<any>(null);
   const [selectedVehicle, setSelectedVehicle] = useState("");
   const [description, setDescription] = useState("");
   const [labour, setLabour] = useState("");
@@ -49,23 +49,47 @@ useEffect(() => {
     if (data) setJobCards(data);
   };
 
-  const handleSave = async () => {
-    if (!selectedVehicle) {
-      alert("Please select a vehicle");
-      return;
-    }
 
     // Insert job card
-const { error } = await supabase.from("job_cards").insert([
-  {
-    vehicle_id: selectedVehicle,
-    description,
-    labour_cost: labourNum,
-    parts_cost: partsNum,
-    total_cost: total,
-    status,
-  },
-]);
+const handleSave = async () => {
+  if (!selectedVehicle) {
+    alert("Please select a vehicle");
+    return;
+  }
+ let error;
+
+if (editingJob) {
+  const response = await supabase
+    .from("job_cards")
+    .update({
+      vehicle_id: selectedVehicle,
+      description,
+      labour_cost: labourNum,
+      parts_cost: partsNum,
+      total_cost: total,
+      status,
+    })
+    .eq("id", editingJob.id);
+
+  error = response.error;
+  setEditingJob(null);
+
+} else {
+  const response = await supabase
+    .from("job_cards")
+    .insert([
+      {
+        vehicle_id: selectedVehicle,
+        description,
+        labour_cost: labourNum,
+        parts_cost: partsNum,
+        total_cost: total,
+        status,
+      },
+    ]);
+
+  error = response.error;
+}
 
 if (error) {
   console.error("Insert error:", error);
@@ -267,14 +291,28 @@ if (error) {
   </select>
 </td>
 
-                <td className="px-4 py-3">
-                  <button
-                    onClick={() => handleDelete(job)}
-                    className="text-red-600 hover:underline text-sm"
-                  >
-                    Delete
-                  </button>
-                </td>
+                <td className="px-4 py-3 space-x-3">
+  <button
+    onClick={() => {
+      setEditingJob(job);
+      setSelectedVehicle(job.vehicle_id);
+      setDescription(job.description);
+      setLabour(String(job.labour_cost));
+      setParts(String(job.parts_cost));
+      setStatus(job.status);
+    }}
+    className="text-blue-600 hover:underline text-sm"
+  >
+    Edit
+  </button>
+
+  <button
+    onClick={() => handleDelete(job)}
+    className="text-red-600 hover:underline text-sm"
+  >
+    Delete
+  </button>
+</td>
               </tr>
             ))}
 
