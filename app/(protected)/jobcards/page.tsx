@@ -56,16 +56,22 @@ useEffect(() => {
     }
 
     // Insert job card
-    await supabase.from("job_cards").insert([
-      {
-        vehicle_id: selectedVehicle,
-        description,
-        labour_cost: labourNum,
-        parts_cost: partsNum,
-        total_cost: total,
-        status,
-      },
-    ]);
+const { error } = await supabase.from("job_cards").insert([
+  {
+    vehicle_id: selectedVehicle,
+    description,
+    labour_cost: labourNum,
+    parts_cost: partsNum,
+    total_cost: total,
+    status,
+  },
+]);
+
+if (error) {
+  console.error("Insert error:", error);
+  alert("Insert failed. Check console.");
+  return;
+}
 
     // Fetch vehicle
     const { data: vehicle } = await supabase
