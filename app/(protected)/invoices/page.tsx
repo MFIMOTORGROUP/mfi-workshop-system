@@ -18,7 +18,19 @@ export default async function InvoicesPage() {
   return (
     <div style={{ padding: "20px" }}>
       <h1>Invoices</h1>
-
+<button
+  style={{
+    marginBottom: "20px",
+    padding: "10px 15px",
+    backgroundColor: "#0070f3",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+  }}
+>
+  + Create Invoice
+</button>
       <table style={{ borderCollapse: "collapse", width: "100%" }}>
         <thead>
           <tr>
