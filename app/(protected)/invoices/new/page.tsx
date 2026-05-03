@@ -12,18 +12,23 @@ export default function NewInvoice() {
   const [buyer, setBuyer] = useState("");
   const [salePrice, setSalePrice] = useState(0);
   const [deposit, setDeposit] = useState(0);
+
+  const [pxValue, setPxValue] = useState(0);
+  const [settlement, setSettlement] = useState(0);
+
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState("");
 
-  const balance = salePrice - deposit;
+  // 🔥 Calculations
+  const negativeEquity = settlement - pxValue;
+  const adjustedPrice = salePrice + negativeEquity;
+  const balance = adjustedPrice - deposit;
 
-  // 🔽 Fetch vehicles
   useEffect(() => {
     const fetchVehicles = async () => {
       const { data } = await supabase.from("vehicles").select("*");
       setVehicles(data || []);
     };
-
     fetchVehicles();
   }, []);
 
@@ -33,8 +38,12 @@ export default function NewInvoice() {
         buyer_name: buyer,
         vehicle_id: selectedVehicle,
         sale_price: salePrice,
-        deposit: deposit,
-        balance: balance,
+        deposit,
+        px_value: pxValue,
+        settlement,
+        negative_equity: negativeEquity,
+        adjusted_price: adjustedPrice,
+        balance,
         status: "pending",
       },
     ]);
@@ -47,30 +56,21 @@ export default function NewInvoice() {
       <h1>Create Sale Invoice</h1>
 
       {/* Buyer */}
-      <input
-        placeholder="Buyer Name"
-        onChange={(e) => setBuyer(e.target.value)}
-      />
+      <input placeholder="Buyer Name" onChange={(e) => setBuyer(e.target.value)} />
       <br /><br />
 
-      {/* Vehicle Dropdown */}
-    <select
-  onChange={(e) => setSelectedVehicle(e.target.value)}
-  style={{
-    padding: "10px",
-    width: "300px",
-    borderRadius: "6px",
-    border: "1px solid #ccc",
-    fontSize: "14px",
-  }}
->
-  <option value="">Select Vehicle</option>
-  {vehicles.map((v) => (
-    <option key={v.id} value={v.id}>
-      {v.make || v.MAKE} {v.model || v.MODEL} – {v.reg || v.REG}
-    </option>
-  ))}
-</select>
+      {/* Vehicle */}
+      <select
+        onChange={(e) => setSelectedVehicle(e.target.value)}
+        style={{ padding: "10px", width: "300px" }}
+      >
+        <option value="">Select Vehicle</option>
+        {vehicles.map((v) => (
+          <option key={v.id} value={v.id}>
+            {v.make || v.MAKE} {v.model || v.MODEL} – {v.reg || v.REG}
+          </option>
+        ))}
+      </select>
 
       <br /><br />
 
@@ -82,6 +82,22 @@ export default function NewInvoice() {
       />
       <br /><br />
 
+      {/* PX */}
+      <input
+        type="number"
+        placeholder="PX Value"
+        onChange={(e) => setPxValue(Number(e.target.value))}
+      />
+      <br /><br />
+
+      {/* Settlement */}
+      <input
+        type="number"
+        placeholder="Settlement"
+        onChange={(e) => setSettlement(Number(e.target.value))}
+      />
+      <br /><br />
+
       {/* Deposit */}
       <input
         type="number"
@@ -90,8 +106,10 @@ export default function NewInvoice() {
       />
       <br /><br />
 
-      {/* Balance */}
-      <p><b>Balance:</b> £{balance}</p>
+      {/* Results */}
+      <p>Negative Equity: £{negativeEquity}</p>
+      <p>Adjusted Price: £{adjustedPrice}</p>
+      <p><b>Balance: £{balance}</b></p>
 
       <button onClick={handleSubmit}>
         Save Invoice
