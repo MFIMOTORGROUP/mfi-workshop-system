@@ -26,7 +26,7 @@ export default function NewInvoice() {
       },
     ]);
 
-    alert("Invoice Created!");
+    window.location.href = "/invoices";
   };
 
   return (
