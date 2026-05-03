@@ -8,6 +8,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+            <head>
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+      </head>
       <body className="bg-gray-100 text-gray-900">
         
         {/* Premium Top Navbar */}
