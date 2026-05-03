@@ -10,6 +10,7 @@ export default function RootLayout({
     <html lang="en">
             <head>
         <link rel="manifest" href="/site.webmanifest" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#000000" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
