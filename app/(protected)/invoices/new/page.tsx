@@ -12,17 +12,17 @@ export default function NewInvoice() {
   const [buyer, setBuyer] = useState("");
   const [salePrice, setSalePrice] = useState(0);
   const [deposit, setDeposit] = useState(0);
-
   const [pxValue, setPxValue] = useState(0);
   const [settlement, setSettlement] = useState(0);
 
   const [vehicles, setVehicles] = useState<any[]>([]);
-  const [selectedVehicle, setSelectedVehicle] = useState("");
+  const [search, setSearch] = useState("");
+  const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
 
   // 🔥 Calculations
-  const negativeEquity = settlement - pxValue;
-  const adjustedPrice = salePrice + negativeEquity;
-  const balance = adjustedPrice - deposit;
+  const equity = pxValue - settlement; // THIS is correct way
+  const finalPrice = salePrice - equity;
+  const balance = finalPrice - deposit;
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -32,17 +32,23 @@ export default function NewInvoice() {
     fetchVehicles();
   }, []);
 
+  const filteredVehicles = vehicles.filter((v) =>
+    `${v.make || v.MAKE} ${v.model || v.MODEL} ${v.reg || v.REG}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
   const handleSubmit = async () => {
     await supabase.from("sales_invoices").insert([
       {
         buyer_name: buyer,
-        vehicle_id: selectedVehicle,
+        vehicle_id: selectedVehicle?.id,
         sale_price: salePrice,
         deposit,
         px_value: pxValue,
         settlement_amount: settlement,
-        negative_equity: negativeEquity,
-        final_price: adjustedPrice,
+        negative_equity: equity,
+        final_price: finalPrice,
         balance,
         status: "pending",
       },
@@ -52,64 +58,89 @@ export default function NewInvoice() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Create Sale Invoice</h1>
+    <div style={{ padding: "30px", maxWidth: "700px" }}>
+      <h2>Create Sales Invoice</h2>
 
-      {/* Buyer */}
-      <input placeholder="Buyer Name" onChange={(e) => setBuyer(e.target.value)} />
-      <br /><br />
-
-      {/* Vehicle */}
-      <select
-        onChange={(e) => setSelectedVehicle(e.target.value)}
-        style={{ padding: "10px", width: "300px" }}
-      >
-        <option value="">Select Vehicle</option>
-        {vehicles.map((v) => (
-          <option key={v.id} value={v.id}>
-            {v.make || v.MAKE} {v.model || v.MODEL} – {v.reg || v.REG}
-          </option>
-        ))}
-      </select>
-
-      <br /><br />
-
-      {/* Sale Price */}
+      {/* CUSTOMER */}
+      <h4>Customer</h4>
       <input
-        type="number"
-        placeholder="Sale Price"
-        onChange={(e) => setSalePrice(Number(e.target.value))}
+        placeholder="Buyer Name"
+        onChange={(e) => setBuyer(e.target.value)}
       />
+
+      <br /><br />
+
+      {/* VEHICLE SEARCH */}
+      <h4>Vehicle</h4>
+      <input
+        placeholder="Search by reg, make, model"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{ width: "100%", padding: "10px" }}
+      />
+
+      <div style={{ border: "1px solid #ccc", maxHeight: "150px", overflow: "auto" }}>
+        {filteredVehicles.map((v) => (
+          <div
+            key={v.id}
+            onClick={() => setSelectedVehicle(v)}
+            style={{
+              padding: "8px",
+              cursor: "pointer",
+              background:
+                selectedVehicle?.id === v.id ? "#0070f3" : "white",
+              color:
+                selectedVehicle?.id === v.id ? "white" : "black",
+            }}
+          >
+            {v.make || v.MAKE} {v.model || v.MODEL} – {v.reg || v.REG}
+          </div>
+        ))}
+      </div>
+
+      <br />
+
+      {/* DEAL */}
+      <h4>Deal</h4>
+
+      <label>Sale Price</label><br />
+      <input type="number" onChange={(e) => setSalePrice(Number(e.target.value))} />
+
+      <br /><br />
+
+      <label>Deposit</label><br />
+      <input type="number" onChange={(e) => setDeposit(Number(e.target.value))} />
+
       <br /><br />
 
       {/* PX */}
-      <input
-        type="number"
-        placeholder="PX Value"
-        onChange={(e) => setPxValue(Number(e.target.value))}
-      />
+      <h4>Part Exchange</h4>
+
+      <label>PX Value</label><br />
+      <input type="number" onChange={(e) => setPxValue(Number(e.target.value))} />
+
       <br /><br />
 
-      {/* Settlement */}
-      <input
-        type="number"
-        placeholder="Settlement"
-        onChange={(e) => setSettlement(Number(e.target.value))}
-      />
+      <label>Settlement</label><br />
+      <input type="number" onChange={(e) => setSettlement(Number(e.target.value))} />
+
       <br /><br />
 
-      {/* Deposit */}
-      <input
-        type="number"
-        placeholder="Deposit"
-        onChange={(e) => setDeposit(Number(e.target.value))}
-      />
-      <br /><br />
+      {/* SUMMARY */}
+      <h3>Deal Summary</h3>
 
-      {/* Results */}
-      <p>Negative Equity: £{negativeEquity}</p>
-      <p>Adjusted Price: £{adjustedPrice}</p>
+      <p>
+        Equity:{" "}
+        <b style={{ color: equity >= 0 ? "green" : "red" }}>
+          £{equity}
+        </b>{" "}
+        {equity >= 0 ? "(Customer has extra)" : "(Customer owes)"}
+      </p>
+
+      <p>Final Price: £{finalPrice}</p>
       <p><b>Balance: £{balance}</b></p>
+
+      <br />
 
       <button onClick={handleSubmit}>
         Save Invoice
