@@ -54,14 +54,23 @@ export default function NewInvoice() {
       <br /><br />
 
       {/* Vehicle Dropdown */}
-      <select onChange={(e) => setSelectedVehicle(e.target.value)}>
-        <option value="">Select Vehicle</option>
-        {vehicles.map((v) => (
-          <option key={v.id} value={v.id}>
-            {v.make || v.MAKE} {v.model || v.MODEL} – {v.reg || v.REG}
-          </option>
-        ))}
-      </select>
+    <select
+  onChange={(e) => setSelectedVehicle(e.target.value)}
+  style={{
+    padding: "10px",
+    width: "300px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+    fontSize: "14px",
+  }}
+>
+  <option value="">Select Vehicle</option>
+  {vehicles.map((v) => (
+    <option key={v.id} value={v.id}>
+      {v.make || v.MAKE} {v.model || v.MODEL} – {v.reg || v.REG}
+    </option>
+  ))}
+</select>
 
       <br /><br />
 
