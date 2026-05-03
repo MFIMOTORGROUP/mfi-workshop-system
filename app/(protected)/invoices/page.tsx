@@ -6,54 +6,55 @@ const supabase = createClient(
 );
 
 export default async function InvoicesPage() {
-  const { data: invoices, error } = await supabase
-    .from("invoices")
+  const { data: sales } = await supabase
+    .from("sales_invoices")
     .select("*");
-
-  if (error) {
-    console.log(error);
-    return <div>Error loading invoices</div>;
-  }
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Invoices</h1>
-<button
-  style={{
-    marginBottom: "20px",
-    padding: "10px 15px",
-    backgroundColor: "#0070f3",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  }}
->
-  + Create Invoice
-</button>
+      <h1>Sales Invoices</h1>
+
+      <button
+        style={{
+          marginBottom: "20px",
+          padding: "10px 15px",
+          backgroundColor: "#0070f3",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+      >
+        + Create Sale Invoice
+      </button>
+
       <table style={{ borderCollapse: "collapse", width: "100%" }}>
         <thead>
           <tr>
-            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Invoice No</th>
-            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Customer</th>
-            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Vehicle</th>
-            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Total</th>
+            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Buyer</th>
+            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Sale Price</th>
+            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Deposit</th>
+            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Balance</th>
+            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Status</th>
           </tr>
         </thead>
         <tbody>
-          {invoices?.map((inv) => (
-            <tr key={inv.id}>
+          {sales?.map((s) => (
+            <tr key={s.id}>
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>
-                {inv.invoice_number}
+                {s.buyer_name}
               </td>
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>
-                {inv.customer_name}
+                £{s.sale_price}
               </td>
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>
-                {inv.vehicle}
+                £{s.deposit}
               </td>
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>
-                £{inv.total}
+                £{s.balance}
+              </td>
+              <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                {s.status}
               </td>
             </tr>
           ))}
