@@ -58,7 +58,7 @@ export default function NewInvoice() {
         <option value="">Select Vehicle</option>
         {vehicles.map((v) => (
           <option key={v.id} value={v.id}>
-           {v.MAKE} {v.MODEL} – {v.REG}
+            {v.make || v.MAKE} {v.model || v.MODEL} – {v.reg || v.REG}
           </option>
         ))}
       </select>
