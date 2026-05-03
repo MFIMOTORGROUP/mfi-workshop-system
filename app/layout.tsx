@@ -38,9 +38,9 @@ export default function RootLayout({
                 Job Cards
               </Link>
 
-              <span className="hover:text-gray-300 cursor-pointer transition">
-                Invoices
-              </span>
+              <Link href="/invoices" className="hover:text-gray-300 transition">
+  Invoices
+</Link>
             </nav>
           </div>
         </header>
