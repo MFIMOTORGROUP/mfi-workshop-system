@@ -19,22 +19,30 @@ export default async function InvoicesPage() {
     <div style={{ padding: "20px" }}>
       <h1>Invoices</h1>
 
-      <table border={1} cellPadding={10}>
+      <table style={{ borderCollapse: "collapse", width: "100%" }}>
         <thead>
           <tr>
-            <th>Invoice No</th>
-            <th>Customer</th>
-            <th>Vehicle</th>
-            <th>Total</th>
+            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Invoice No</th>
+            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Customer</th>
+            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Vehicle</th>
+            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Total</th>
           </tr>
         </thead>
         <tbody>
           {invoices?.map((inv) => (
             <tr key={inv.id}>
-              <td>{inv.invoice_number}</td>
-              <td>{inv.customer_name}</td>
-              <td>{inv.vehicle}</td>
-              <td>£{inv.total}</td>
+              <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                {inv.invoice_number}
+              </td>
+              <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                {inv.customer_name}
+              </td>
+              <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                {inv.vehicle}
+              </td>
+              <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+                £{inv.total}
+              </td>
             </tr>
           ))}
         </tbody>
