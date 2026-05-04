@@ -102,6 +102,7 @@ const { data, error } = await supabase
   if (error) {
     alert("Error saving invoice");
     console.error(error);
+      alert(error.message); // 👈 THIS is key
     return;
   }
 
