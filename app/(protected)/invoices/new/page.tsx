@@ -44,152 +44,204 @@ const [dateOfReg, setDateOfReg] = useState("");
       .toLowerCase()
       .includes(search.toLowerCase())
   );
-
+if (!buyer || !selectedVehicle) {
+  alert("Please select customer and vehicle");
+  return;
+}
   const handleSubmit = async () => {
-    await supabase.from("sales_invoices").insert([
-      {
-        buyer_name: buyer,
-        vehicle_id: selectedVehicle?.id,
-        sale_price: salePrice,
-        deposit,
-        px_value: pxValue,
-        settlement_amount: settlement,
-        negative_equity: equity,
-        final_price: finalPrice,
-        balance,
-        status: "pending",
-      },
-    ]);
+await supabase.from("sales_invoices").insert([
+  {
+    buyer_name: buyer,
+    vehicle_id: selectedVehicle?.id,
+    sale_price: salePrice,
+    deposit,
+    px_value: pxValue,
+    settlement_amount: settlement,
+    negative_equity: equity,
+    final_price: finalPrice,
+    balance,
+
+    color_snapshot: color,
+    vin_snapshot: vin,
+    date_of_reg_snapshot: dateOfReg,
+
+    status: "pending",
+  },
+]);
 
     window.location.href = "/invoices";
   };
+const card = {
+  background: "#fff",
+  padding: "20px",
+  marginBottom: "20px",
+  borderRadius: "10px",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
+};
 
-  return (
-    <div style={{ padding: "30px", maxWidth: "700px" }}>
-      <h2>Create Sales Invoice</h2>
+const input = {
+  width: "100%",
+  padding: "10px",
+  marginTop: "10px",
+  border: "1px solid #ccc",
+  borderRadius: "6px"
+};
 
-      {/* CUSTOMER */}
-      <h4>Customer</h4>
+const grid = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "10px"
+};
+
+const dropdown = {
+  border: "1px solid #ccc",
+  maxHeight: "150px",
+  overflow: "auto",
+  marginTop: "10px"
+};
+
+const dropdownItem = {
+  padding: "10px",
+  cursor: "pointer",
+  borderBottom: "1px solid #eee"
+};
+
+const button = {
+  background: "#0070f3",
+  color: "#fff",
+  padding: "12px 20px",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer"
+};
+ return (
+  <div style={{ padding: "40px", maxWidth: "900px", margin: "auto" }}>
+    <h1 style={{ marginBottom: "30px" }}>Create Sales Invoice</h1>
+
+    {/* CUSTOMER */}
+    <div style={card}>
+      <h3>Customer</h3>
       <input
         placeholder="Buyer Name"
         onChange={(e) => setBuyer(e.target.value)}
+        style={input}
       />
+    </div>
 
-      <br /><br />
+    {/* VEHICLE */}
+    <div style={card}>
+      <h3>Vehicle</h3>
 
-      {/* VEHICLE SEARCH */}
-      <h4>Vehicle</h4>
       <input
         placeholder="Search by reg, make, model"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        style={{ width: "100%", padding: "10px" }}
+        style={input}
       />
 
-      <div style={{ border: "1px solid #ccc", maxHeight: "150px", overflow: "auto" }}>
+      <div style={dropdown}>
         {filteredVehicles.map((v) => (
           <div
             key={v.id}
             onClick={() => {
-  setSelectedVehicle(v);
-
-  setColor(v.color || "");
-  setVin(v.vin || "");
-  setDateOfReg(v.date_of_reg || "");
-}
-                
-            }
-                style={{
-              padding: "8px",
-              cursor: "pointer",
-              background:
-                selectedVehicle?.id === v.id ? "#0070f3" : "white",
-              color:
-                selectedVehicle?.id === v.id ? "white" : "black",
+              setSelectedVehicle(v);
+              setColor(v.color || "");
+              setVin(v.vin || "");
+              setDateOfReg(v.date_of_reg || "");
             }}
+            style={{
+  ...dropdownItem,
+  background: selectedVehicle?.id === v.id ? "#0070f3" : "white",
+  color: selectedVehicle?.id === v.id ? "white" : "black"
+}}
           >
             {v.make || v.MAKE} {v.model || v.MODEL} – {v.reg || v.REG}
           </div>
         ))}
       </div>
-<br />
 
-{selectedVehicle && (
-  <>
-    <h3>Vehicle Details</h3>
+      {selectedVehicle && (
+        <div style={{ marginTop: "20px" }}>
+          <h4>Vehicle Details</h4>
 
-    <input
-      placeholder="Color"
-      value={color}
-      onChange={(e) => setColor(e.target.value)}
-    />
+          <div style={grid}>
+            <input
+              placeholder="Color"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              style={input}
+            />
 
-    <br /><br />
+            <input
+              placeholder="VIN"
+              value={vin}
+              onChange={(e) => setVin(e.target.value)}
+              style={input}
+            />
 
-    <input
-      placeholder="VIN"
-      value={vin}
-      onChange={(e) => setVin(e.target.value)}
-    />
-
-    <br /><br />
-
-    <input
-      type="date"
-      value={dateOfReg}
-      onChange={(e) => setDateOfReg(e.target.value)}
-    />
-
-    <br /><br />
-  </>
-)}
-      <br />
-
-      {/* DEAL */}
-      <h4>Deal</h4>
-
-      <label>Sale Price</label><br />
-      <input type="number" onChange={(e) => setSalePrice(Number(e.target.value))} />
-
-      <br /><br />
-
-      <label>Deposit</label><br />
-      <input type="number" onChange={(e) => setDeposit(Number(e.target.value))} />
-
-      <br /><br />
-
-      {/* PX */}
-      <h4>Part Exchange</h4>
-
-      <label>PX Value</label><br />
-      <input type="number" onChange={(e) => setPxValue(Number(e.target.value))} />
-
-      <br /><br />
-
-      <label>Settlement</label><br />
-      <input type="number" onChange={(e) => setSettlement(Number(e.target.value))} />
-
-      <br /><br />
-
-      {/* SUMMARY */}
-      <h3>Deal Summary</h3>
-
-      <p>
-        Equity:{" "}
-        <b style={{ color: equity >= 0 ? "green" : "red" }}>
-          £{equity}
-        </b>{" "}
-        {equity >= 0 ? "(Customer has extra)" : "(Customer owes)"}
-      </p>
-
-      <p>Final Price: £{finalPrice}</p>
-      <p><b>Balance: £{balance}</b></p>
-
-      <br />
-
-      <button onClick={handleSubmit}>
-        Save Invoice
-      </button>
+            <input
+              type="date"
+              value={dateOfReg}
+              onChange={(e) => setDateOfReg(e.target.value)}
+              style={input}
+            />
+          </div>
+        </div>
+      )}
     </div>
+
+    {/* DEAL */}
+    <div style={card}>
+      <h3>Deal</h3>
+
+      <div style={grid}>
+        <input
+          type="number"
+          placeholder="Sale Price"
+          onChange={(e) => setSalePrice(Number(e.target.value))}
+          style={input}
+        />
+
+        <input
+          type="number"
+          placeholder="Deposit"
+          onChange={(e) => setDeposit(Number(e.target.value))}
+          style={input}
+        />
+
+        <input
+          type="number"
+          placeholder="PX Value"
+          onChange={(e) => setPxValue(Number(e.target.value))}
+          style={input}
+        />
+
+        <input
+          type="number"
+          placeholder="Settlement"
+          onChange={(e) => setSettlement(Number(e.target.value))}
+          style={input}
+        />
+      </div>
+
+      <div style={{ marginTop: "20px" }}>
+        <p>
+  Equity:{" "}
+  <strong style={{ color: equity >= 0 ? "green" : "red" }}>
+    £{equity}
+  </strong>
+</p>
+
+<p>Final Price: £{finalPrice}</p>
+        <p><strong>Balance: £{balance}</strong></p>
+      </div>
+    </div>
+
+    {/* BUTTON */}
+    <button onClick={handleSubmit} style={button}>
+      Save Invoice
+    </button>
+  </div>
+
   );
 }
