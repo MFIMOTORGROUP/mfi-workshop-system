@@ -9,6 +9,15 @@ const supabase = createClient(
 );
 
 export default function InvoicesPage() {
+  const th = {
+  padding: "12px",
+  fontSize: "13px",
+  fontWeight: "bold",
+};
+
+const td = {
+  padding: "12px",
+};
   const [invoices, setInvoices] = useState<any[]>([]);
 
   useEffect(() => {
@@ -22,61 +31,93 @@ export default function InvoicesPage() {
     };
 
     fetchInvoices();
+  
   }, []);
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h2>Sales Invoices</h2>
+  <div style={{ padding: "40px", maxWidth: "1100px", margin: "auto" }}>
+    
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <h1>Sales Invoices</h1>
 
-      <a href="/invoices/new">
-        <button style={{ marginBottom: "20px" }}>
-          + Create Sale Invoice
-        </button>
-      </a>
+      <button
+        onClick={() => window.location.href = "/invoices/new"}
+        style={{
+          background: "#0070f3",
+          color: "#fff",
+          padding: "10px 15px",
+          border: "none",
+          borderRadius: "6px",
+          cursor: "pointer"
+        }}
+      >
+        + Create Invoice
+      </button>
+    </div>
 
+    <div style={{
+      marginTop: "20px",
+      background: "#fff",
+      borderRadius: "10px",
+      boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+      overflow: "hidden"
+    }}>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr style={{ background: "#f5f5f5" }}>
-            <th>Buyer</th>
-            <th>Vehicle</th>
-            <th>Type</th>
-            <th>Price</th>
-            <th>Balance</th>
-            <th>Monthly</th>
-            <th>Status</th>
+        <thead style={{ background: "#f5f5f5", textAlign: "left" }}>
+          <tr>
+            <th style={th}>Customer</th>
+            <th style={th}>Vehicle</th>
+            <th style={th}>Type</th>
+            <th style={th}>Price</th>
+            <th style={th}>Balance</th>
+            <th style={th}>Monthly</th>
+            <th style={th}>Status</th>
           </tr>
         </thead>
 
         <tbody>
           {invoices.map((inv) => (
-            <tr key={inv.id} style={{ borderBottom: "1px solid #eee" }}>
-              <td>{inv.buyer_name}</td>
+            <tr
+              key={inv.id}
+              onClick={() => window.location.href = `/invoices/${inv.id}`}
+              style={{ cursor: "pointer", borderTop: "1px solid #eee" }}
+            >
+              <td style={td}>{inv.buyer_name}</td>
 
-              <td>{inv.vehicle_id?.slice(0, 6)}</td>
-
-              <td>
-                {inv.finance ? (
-                  <span style={{ color: "#0070f3" }}>Finance</span>
-                ) : (
-                  <span style={{ color: "green" }}>Cash</span>
-                )}
+              <td style={td}>
+                {inv.vehicles?.make} {inv.vehicles?.model}
               </td>
 
-              <td>£{inv.sale_price}</td>
-
-              <td>
-                <strong>£{inv.balance}</strong>
+              <td style={td}>
+                {inv.finance ? "Finance" : "Cash"}
               </td>
 
-              <td>
-                {inv.finance ? `£${inv.monthly_payment}` : "-"}
+              <td style={td}>£{inv.sale_price}</td>
+
+              <td style={td}>£{inv.balance}</td>
+
+              <td style={td}>
+                {inv.monthly_payment ? `£${inv.monthly_payment}` : "-"}
               </td>
 
-              <td>{inv.status}</td>
+              <td style={td}>
+                <span style={{
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  fontSize: "12px",
+                  background:
+                    inv.status === "pending" ? "#fff3cd" : "#d4edda",
+                  color:
+                    inv.status === "pending" ? "#856404" : "#155724"
+                }}>
+                  {inv.status}
+                </span>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-  );
+  </div>
+);
 }
