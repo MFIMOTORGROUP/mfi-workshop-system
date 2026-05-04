@@ -47,10 +47,18 @@ export default function InvoicePage() {
 
     {/* CUSTOMER */}
     <div style={{ marginBottom: "20px" }}>
-      <h3>Customer</h3>
-      <p><b>Name:</b> {invoice.buyer_name}</p>
-      <p><b>Date:</b> {new Date(invoice.created_at).toLocaleDateString()}</p>
-    </div>
+  <h3>Customer</h3>
+
+  <p><b>Name:</b> {invoice.buyer_name}</p>
+
+  <p><b>Phone:</b> {invoice.customer_phone || "-"}</p>
+
+  <p><b>Email:</b> {invoice.customer_email || "-"}</p>
+
+  <p><b>Address:</b> {invoice.customer_address || "-"}</p>
+
+  <p><b>Date:</b> {new Date(invoice.created_at).toLocaleDateString()}</p>
+</div>
 
     {/* VEHICLE */}
     <div style={{ marginBottom: "20px" }}>
