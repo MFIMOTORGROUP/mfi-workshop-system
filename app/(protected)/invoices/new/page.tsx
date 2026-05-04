@@ -9,15 +9,22 @@ const supabase = createClient(
 );
 
 export default function NewInvoice() {
+    
   const [buyer, setBuyer] = useState("");
   const [salePrice, setSalePrice] = useState(0);
   const [deposit, setDeposit] = useState(0);
+
+  const [color, setColor] = useState("");
+const [vin, setVin] = useState("");
+const [dateOfReg, setDateOfReg] = useState("");
+
   const [pxValue, setPxValue] = useState(0);
   const [settlement, setSettlement] = useState(0);
 
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
+  
 
   // 🔥 Calculations
   const equity = pxValue - settlement; // THIS is correct way
@@ -83,8 +90,16 @@ export default function NewInvoice() {
         {filteredVehicles.map((v) => (
           <div
             key={v.id}
-            onClick={() => setSelectedVehicle(v)}
-            style={{
+            onClick={() => {
+  setSelectedVehicle(v);
+
+  setColor(v.color || "");
+  setVin(v.vin || "");
+  setDateOfReg(v.date_of_reg || "");
+}
+                
+            }
+                style={{
               padding: "8px",
               cursor: "pointer",
               background:
@@ -97,7 +112,37 @@ export default function NewInvoice() {
           </div>
         ))}
       </div>
+<br />
 
+{selectedVehicle && (
+  <>
+    <h3>Vehicle Details</h3>
+
+    <input
+      placeholder="Color"
+      value={color}
+      onChange={(e) => setColor(e.target.value)}
+    />
+
+    <br /><br />
+
+    <input
+      placeholder="VIN"
+      value={vin}
+      onChange={(e) => setVin(e.target.value)}
+    />
+
+    <br /><br />
+
+    <input
+      type="date"
+      value={dateOfReg}
+      onChange={(e) => setDateOfReg(e.target.value)}
+    />
+
+    <br /><br />
+  </>
+)}
       <br />
 
       {/* DEAL */}
