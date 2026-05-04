@@ -29,7 +29,9 @@ const [dateOfReg, setDateOfReg] = useState("");
 const [financeCompany, setFinanceCompany] = useState("");
 const [term, setTerm] = useState(60);
 const [interest, setInterest] = useState(10);
-
+const [phone, setPhone] = useState("");
+const [email, setEmail] = useState("");
+const [address, setAddress] = useState("");
   // 🔥 Calculations
   const equity = pxValue - settlement;
 
@@ -69,6 +71,9 @@ const { data, error } = await supabase
     .insert([
       {
     buyer_name: buyer,
+    customer_phone: phone,
+customer_email: email,
+customer_address: address,
         vehicle_id: selectedVehicle?.id,
         sale_price: salePrice,
         deposit,
@@ -169,15 +174,34 @@ const button = {
   <div style={{ padding: "40px", maxWidth: "900px", margin: "auto" }}>
     <h1 style={{ marginBottom: "30px" }}>Create Sales Invoice</h1>
 
-    {/* CUSTOMER */}
-    <div style={card}>
-      <h3>Customer</h3>
-      <input
-        placeholder="Buyer Name"
-        onChange={(e) => setBuyer(e.target.value)}
-        style={input}
-      />
-    </div>
+ {/* CUSTOMER */}
+<div style={card}>
+  <h3>Customer</h3>
+
+  <input
+    placeholder="Buyer Name"
+    onChange={(e) => setBuyer(e.target.value)}
+    style={input}
+  />
+
+  <input
+    placeholder="Phone Number"
+    onChange={(e) => setPhone(e.target.value)}
+    style={input}
+  />
+
+  <input
+    placeholder="Email Address"
+    onChange={(e) => setEmail(e.target.value)}
+    style={input}
+  />
+
+  <input
+    placeholder="Address"
+    onChange={(e) => setAddress(e.target.value)}
+    style={input}
+  />
+</div>
 
     {/* VEHICLE */}
     <div style={card}>
