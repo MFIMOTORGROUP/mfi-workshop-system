@@ -44,11 +44,12 @@ const [dateOfReg, setDateOfReg] = useState("");
       .toLowerCase()
       .includes(search.toLowerCase())
   );
-if (!buyer || !selectedVehicle) {
+
+  const handleSubmit = async () => {
+    if (!buyer || !selectedVehicle) {
   alert("Please select customer and vehicle");
   return;
 }
-  const handleSubmit = async () => {
 await supabase.from("sales_invoices").insert([
   {
     buyer_name: buyer,
