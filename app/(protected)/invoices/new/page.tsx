@@ -74,7 +74,7 @@ await supabase.from("sales_invoices").insert([
     negative_equity: equity,
     final_price: finalPrice,
     balance,
-      is_finance: isFinance,
+    finance: isFinance,
   finance_company: financeCompany,
   term,
   interest_rate: interest,
