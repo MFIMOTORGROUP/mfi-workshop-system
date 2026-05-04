@@ -64,8 +64,10 @@ const monthlyPayment =
   alert("Please select customer and vehicle");
   return;
 }
-await supabase.from("sales_invoices").insert([
-  {
+const { data, error } = await supabase
+    .from("sales_invoices")
+    .insert([
+      {
     buyer_name: buyer,
     vehicle_id: selectedVehicle?.id,
     sale_price: salePrice,
@@ -88,9 +90,16 @@ await supabase.from("sales_invoices").insert([
 
     status: "pending",
   },
-]);
+])
+.select(); 
 
-    window.location.href = "/invoices";
+  if (error) {
+    alert("Error saving invoice");
+    console.error(error);
+    return;
+  }
+
+     window.location.href = `/invoices/${data[0].id}`;
   };
 const card = {
   background: "#fff",
