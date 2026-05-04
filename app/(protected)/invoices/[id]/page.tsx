@@ -12,18 +12,28 @@ const supabase = createClient(
 export default function InvoicePage() {
   const { id } = useParams();
   const [invoice, setInvoice] = useState<any>(null);
+  const [vehicle, setVehicle] = useState<any>(null);
 useEffect(() => {
   const fetchInvoice = async () => {
-    const { data, error } = await supabase
+    // 1. get invoice
+    const { data: invoiceData } = await supabase
       .from("sales_invoices")
       .select("*")
       .eq("id", id)
       .single();
 
-    console.log("DATA:", data);
-    console.log("ERROR:", error);
+    setInvoice(invoiceData);
 
-    setInvoice(data);
+    // 2. get vehicle using vehicle_id
+    if (invoiceData?.vehicle_id) {
+      const { data: vehicleData } = await supabase
+        .from("vehicles")
+        .select("*")
+        .eq("id", invoiceData.vehicle_id)
+        .single();
+
+      setVehicle(vehicleData);
+    }
   };
 
   fetchInvoice();
@@ -71,9 +81,9 @@ useEffect(() => {
     {/* VEHICLE */}
     <div style={{ marginBottom: "20px" }}>
       <h3>Vehicle</h3>
-      <p><b>Make:</b> {invoice.vehicles?.make}</p>
-      <p><b>Model:</b> {invoice.vehicles?.model}</p>
-      <p><b>Reg:</b> {invoice.vehicles?.reg}</p>
+   <p><b>Make:</b> {vehicle?.make || "-"}</p>
+<p><b>Model:</b> {vehicle?.model || "-"}</p>
+<p><b>Reg:</b> {vehicle?.reg || "-"}</p>
 
       <p><b>Color:</b> {invoice.color_snapshot}</p>
       <p><b>VIN:</b> {invoice.vin_snapshot}</p>
