@@ -69,39 +69,45 @@ const { data, error } = await supabase
     .insert([
       {
     buyer_name: buyer,
-    vehicle_id: selectedVehicle?.id,
-    sale_price: salePrice,
-    deposit,
-    px_value: pxValue,
-    settlement_amount: settlement,
-    
-    negative_equity: equity,
-    final_price: finalPrice,
-    balance,
-    finance: isFinance,
-  finance_company: financeCompany,
-  term,
-  interest_rate: interest,
-  monthly_payment: Number(monthlyPayment),
+        vehicle_id: selectedVehicle?.id,
+        sale_price: salePrice,
+        deposit,
+        balance,
 
-    color_snapshot: color,
-    vin_snapshot: vin,
-    date_of_reg_snapshot: dateOfReg,
+        px_value: pxValue,
+        settlement_amount: settlement,
+        negative_equity: equity,
+        final_price: finalPrice,
 
-    status: "pending",
-  },
-])
-.select(); 
+        finance: isFinance,
+        finance_company: financeCompany,
+        term,
+        interest_rate: interest,
+        monthly_payment: Number(monthlyPayment),
 
- if (error) {
-  console.error(error);
-  alert(error.message); // 👈 show actual reason
-  return;
+        // 🔥 snapshots
+        color_snapshot: color,
+        vin_snapshot: vin,
+        date_of_reg_snapshot: dateOfReg,
 
+        // 🔥 extras
+        delivery_fee: deliveryFee,
+        warranty,
+
+        status: "pending",
+      },
+    ])
+    .select();
+
+  if (error) {
+    alert("Error saving invoice");
+    console.error(error);
+    return;
   }
 
-     window.location.href = `/invoices/${data[0].id}`;
-  };
+  // 👉 redirect to invoice page
+  window.location.href = `/invoices/${data[0].id}`;
+};
 const card = {
   background: "#fff",
   padding: "20px",
