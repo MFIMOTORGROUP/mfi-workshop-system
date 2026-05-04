@@ -15,11 +15,18 @@ export default function InvoicePage() {
 
   useEffect(() => {
     const fetchInvoice = async () => {
-      const { data } = await supabase
-        .from("sales_invoices")
-        .select("*")
-        .eq("id", id)
-        .single();
+   const { data } = await supabase
+  .from("sales_invoices")
+  .select(`
+    *,
+    vehicles (
+      make,
+      model,
+      reg
+    )
+  `)
+  .eq("id", id)
+  .single();
 
       setInvoice(data);
     };
@@ -49,9 +56,12 @@ export default function InvoicePage() {
       <p>{invoice.buyer_name}</p>
 
       {/* VEHICLE */}
-      <h3>Vehicle</h3>
-      <p>{invoice.vehicle_id}</p>
+     
+<h3>Vehicle</h3>
 
+<p><b>Make:</b> {invoice.vehicles?.make}</p>
+<p><b>Model:</b> {invoice.vehicles?.model}</p>
+<p><b>Reg:</b> {invoice.vehicles?.reg}</p>
       {/* DEAL */}
       <h3>Deal Breakdown</h3>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
