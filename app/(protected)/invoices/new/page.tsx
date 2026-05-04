@@ -93,10 +93,11 @@ const { data, error } = await supabase
 ])
 .select(); 
 
-  if (error) {
-    alert("Error saving invoice");
-    console.error(error);
-    return;
+ if (error) {
+  console.error(error);
+  alert(error.message); // 👈 show actual reason
+  return;
+
   }
 
      window.location.href = `/invoices/${data[0].id}`;
