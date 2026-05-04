@@ -24,12 +24,24 @@ const [dateOfReg, setDateOfReg] = useState("");
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
-  
+  const [isFinance, setIsFinance] = useState(false);
+const [financeCompany, setFinanceCompany] = useState("");
+const [term, setTerm] = useState(60);
+const [interest, setInterest] = useState(10);
 
   // 🔥 Calculations
-  const equity = pxValue - settlement; // THIS is correct way
-  const finalPrice = salePrice - equity;
-  const balance = finalPrice - deposit;
+  const equity = pxValue - settlement;
+
+const finalPrice = salePrice + (settlement - pxValue);
+
+const balance = finalPrice - deposit;
+
+const loanAmount = finalPrice - deposit;
+
+const monthlyPayment =
+  isFinance && loanAmount > 0
+    ? ((loanAmount * (1 + interest / 100)) / term).toFixed(2)
+    : 0;
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -58,9 +70,15 @@ await supabase.from("sales_invoices").insert([
     deposit,
     px_value: pxValue,
     settlement_amount: settlement,
+    
     negative_equity: equity,
     final_price: finalPrice,
     balance,
+      is_finance: isFinance,
+  finance_company: financeCompany,
+  term,
+  interest_rate: interest,
+  monthly_payment: Number(monthlyPayment),
 
     color_snapshot: color,
     vin_snapshot: vin,
@@ -224,6 +242,54 @@ const button = {
           style={input}
         />
       </div>
+      {/* FINANCE */}
+<div style={card}>
+  <h3>Finance</h3>
+
+  <label style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+    <input
+      type="checkbox"
+      checked={isFinance}
+      onChange={() => setIsFinance(!isFinance)}
+    />
+    Finance Deal
+  </label>
+
+  {isFinance && (
+    <>
+      <div style={grid}>
+        <input
+          placeholder="Finance Company (e.g. Close Brothers)"
+          onChange={(e) => setFinanceCompany(e.target.value)}
+          style={input}
+        />
+
+        <input
+          type="number"
+          placeholder="Term (months)"
+          value={term}
+          onChange={(e) => setTerm(Number(e.target.value))}
+          style={input}
+        />
+
+        <input
+          type="number"
+          placeholder="Interest %"
+          value={interest}
+          onChange={(e) => setInterest(Number(e.target.value))}
+          style={input}
+        />
+      </div>
+
+      <div style={{ marginTop: "15px" }}>
+        <p>Loan Amount: £{loanAmount}</p>
+        <p>
+          <strong>Monthly Payment: £{monthlyPayment}</strong>
+        </p>
+      </div>
+    </>
+  )}
+</div>
 
       <div style={{ marginTop: "20px" }}>
         <p>
