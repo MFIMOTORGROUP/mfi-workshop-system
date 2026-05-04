@@ -119,6 +119,12 @@ const label = {
   marginTop: "10px",
   display: "block"
 };
+const formRow = {
+  display: "grid",
+  gridTemplateColumns: "200px 1fr",
+  alignItems: "center",
+  marginBottom: "12px"
+};
 const dropdown = {
   border: "1px solid #ccc",
   maxHeight: "150px",
@@ -220,45 +226,64 @@ const button = {
     <div style={card}>
   <h3>Deal</h3>
 
-  <div style={grid}>
-    <div>
-     <label style={label}>Sale Price (£)</label>
-      <input
-        type="number"
-        placeholder="e.g. 10000"
-        onChange={(e) => setSalePrice(Number(e.target.value))}
-        style={input}
-      />
-    </div>
+  <div style={formRow}>
+    <label style={label}>Sale Price (£)</label>
+    <input
+      type="number"
+      value={salePrice}
+      onChange={(e) => setSalePrice(Number(e.target.value) || 0)}
+      style={input}
+    />
+  </div>
 
-    <div>
+  <div style={formRow}>
     <label style={label}>Deposit (£)</label>
-      <input
-        type="number"
-        placeholder="e.g. 1000"
-        onChange={(e) => setDeposit(Number(e.target.value))}
-        style={input}
-      />
-    </div>
+    <input
+      type="number"
+      value={deposit}
+      onChange={(e) => setDeposit(Number(e.target.value) || 0)}
+      style={input}
+    />
+  </div>
 
-    <div>
-<label style={label}>Part Exchange Value (£)</label>
-      <input
-        type="number"
-        placeholder="e.g. 3000"
-        onChange={(e) => setPxValue(Number(e.target.value))}
-        style={input}
-      />
-    </div>
+  <div style={formRow}>
+    <label style={label}>Part Exchange (£)</label>
+    <input
+      type="number"
+      value={pxValue}
+      onChange={(e) => setPxValue(Number(e.target.value) || 0)}
+      style={input}
+    />
+  </div>
 
-    <div>
-<label style={label}>Settlement (£)</label>      <input
-        type="number"
-        placeholder="e.g. 4500"
-        onChange={(e) => setSettlement(Number(e.target.value))}
-        style={input}
-      />
-    </div>
+  <div style={formRow}>
+    <label style={label}>Settlement (£)</label>
+    <input
+      type="number"
+      value={settlement}
+      onChange={(e) => setSettlement(Number(e.target.value) || 0)}
+      style={input}
+    />
+  </div>
+  <hr style={{ margin: "15px 0", opacity: 0.2 }} />
+
+  <div
+    style={{
+      background: "#f8f9fa",
+      padding: "15px",
+      borderRadius: "8px"
+    }}
+  >
+    <p>
+      Equity:{" "}
+      <b style={{ color: equity >= 0 ? "green" : "red" }}>
+        £{equity}
+      </b>
+    </p>
+
+    <p>Final Price: <b>£{finalPrice}</b></p>
+
+    <p><strong>Balance: £{balance}</strong></p>
   </div>
 
   <div style={{ marginTop: "20px" }}>
