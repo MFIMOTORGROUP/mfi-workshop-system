@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -5,59 +8,71 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export default async function InvoicesPage() {
-  const { data: sales } = await supabase
-    .from("sales_invoices")
-    .select("*");
+export default function InvoicesPage() {
+  const [invoices, setInvoices] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      const { data } = await supabase
+        .from("sales_invoices")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      setInvoices(data || []);
+    };
+
+    fetchInvoices();
+  }, []);
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Sales Invoices</h1>
+    <div style={{ padding: "30px" }}>
+      <h2>Sales Invoices</h2>
 
       <a href="/invoices/new">
-  <button
-    style={{
-      marginBottom: "20px",
-      padding: "10px 15px",
-      backgroundColor: "#0070f3",
-      color: "white",
-      border: "none",
-      borderRadius: "5px",
-      cursor: "pointer",
-    }}
-  >
-    + Create Sale Invoice
-  </button>
-</a>
+        <button style={{ marginBottom: "20px" }}>
+          + Create Sale Invoice
+        </button>
+      </a>
 
-      <table style={{ borderCollapse: "collapse", width: "100%" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
-          <tr>
-            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Buyer</th>
-            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Sale Price</th>
-            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Deposit</th>
-            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Balance</th>
-            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Status</th>
+          <tr style={{ background: "#f5f5f5" }}>
+            <th>Buyer</th>
+            <th>Vehicle</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Balance</th>
+            <th>Monthly</th>
+            <th>Status</th>
           </tr>
         </thead>
+
         <tbody>
-          {sales?.map((s) => (
-            <tr key={s.id}>
-              <td style={{ border: "1px solid #ccc", padding: "10px" }}>
-                {s.buyer_name}
+          {invoices.map((inv) => (
+            <tr key={inv.id} style={{ borderBottom: "1px solid #eee" }}>
+              <td>{inv.buyer_name}</td>
+
+              <td>{inv.vehicle_id?.slice(0, 6)}</td>
+
+              <td>
+                {inv.finance ? (
+                  <span style={{ color: "#0070f3" }}>Finance</span>
+                ) : (
+                  <span style={{ color: "green" }}>Cash</span>
+                )}
               </td>
-              <td style={{ border: "1px solid #ccc", padding: "10px" }}>
-                £{s.sale_price}
+
+              <td>£{inv.sale_price}</td>
+
+              <td>
+                <strong>£{inv.balance}</strong>
               </td>
-              <td style={{ border: "1px solid #ccc", padding: "10px" }}>
-                £{s.deposit}
+
+              <td>
+                {inv.finance ? `£${inv.monthly_payment}` : "-"}
               </td>
-              <td style={{ border: "1px solid #ccc", padding: "10px" }}>
-                £{s.balance}
-              </td>
-              <td style={{ border: "1px solid #ccc", padding: "10px" }}>
-                {s.status}
-              </td>
+
+              <td>{inv.status}</td>
             </tr>
           ))}
         </tbody>
