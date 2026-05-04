@@ -12,52 +12,60 @@ const supabase = createClient(
 export default function InvoicePage() {
   const { id } = useParams();
   const [invoice, setInvoice] = useState<any>(null);
+useEffect(() => {
+  const fetchInvoice = async () => {
+    const { data, error } = await supabase
+      .from("sales_invoices")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-  useEffect(() => {
-    const fetchInvoice = async () => {
-   const { data } = await supabase
-  .from("sales_invoices")
-  .select(`
-    *,
-    vehicles (
-      make,
-      model,
-      reg
-    )
-  `)
-  .eq("id", id)
-  .single();
+    console.log("DATA:", data);
+    console.log("ERROR:", error);
 
-      setInvoice(data);
-    };
+    setInvoice(data);
+  };
 
-    fetchInvoice();
-  }, [id]);
-
+  fetchInvoice();
+}, [id]);
   if (!invoice) return <p>Loading...</p>;
 
  return (
   <div style={{ padding: "40px", maxWidth: "800px", margin: "auto", background: "#fff" }}>
     
-    {/* HEADER */}
-    <div style={{ borderBottom: "2px solid #000", paddingBottom: "10px", marginBottom: "20px" }}>
-      <h1>MFI Motor Group</h1>
-      <p>Sales Invoice</p>
-    </div>
+   {/* HEADER */}
+<div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
+  <div>
+    <h2>MFI MOTOR COMPANY LTD</h2>
+    <p>Motor Group</p>
+  </div>
 
-    {/* CUSTOMER */}
-    <div style={{ marginBottom: "20px" }}>
-  <h3>Customer</h3>
+  <div style={{ textAlign: "right" }}>
+    <h2>Invoice</h2>
+    <p><b>ID:</b> {invoice.id.slice(0, 6)}</p>
+    <p><b>Date:</b> {new Date(invoice.created_at).toLocaleDateString()}</p>
+  </div>
+</div>
 
-  <p><b>Name:</b> {invoice.buyer_name}</p>
+<hr />
 
-  <p><b>Phone:</b> {invoice.customer_phone || "-"}</p>
+{/* CUSTOMER */}
+<div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+  
+  <div style={{ width: "48%" }}>
+    <h4>Invoice To</h4>
+    <p>{invoice.buyer_name}</p>
+    <p>{invoice.customer_phone || "-"}</p>
+    <p>{invoice.customer_email || "-"}</p>
+    <p>{invoice.customer_address || "-"}</p>
+  </div>
 
-  <p><b>Email:</b> {invoice.customer_email || "-"}</p>
+  <div style={{ width: "48%" }}>
+    <h4>Delivery To</h4>
+    <p>{invoice.buyer_name}</p>
+    <p>{invoice.customer_address || "-"}</p>
+  </div>
 
-  <p><b>Address:</b> {invoice.customer_address || "-"}</p>
-
-  <p><b>Date:</b> {new Date(invoice.created_at).toLocaleDateString()}</p>
 </div>
 
     {/* VEHICLE */}
@@ -76,34 +84,25 @@ export default function InvoicePage() {
     <div style={{ marginBottom: "20px" }}>
       <h3>Deal Breakdown</h3>
 
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <tbody>
-          <tr>
-            <td>Sale Price</td>
-            <td>£{invoice.sale_price}</td>
-          </tr>
-          <tr>
-            <td>Deposit</td>
-            <td>£{invoice.deposit}</td>
-          </tr>
-          <tr>
-            <td>Part Exchange</td>
-            <td>£{invoice.px_value}</td>
-          </tr>
-          <tr>
-            <td>Settlement</td>
-            <td>£{invoice.settlement_amount}</td>
-          </tr>
-          <tr>
-            <td>Delivery Fee</td>
-            <td>£{invoice.delivery_fee}</td>
-          </tr>
-          <tr>
-            <td>Warranty</td>
-            <td>£{invoice.warranty}</td>
-          </tr>
-        </tbody>
-      </table>
+      <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "10px" }}>
+  <tbody>
+    {[
+      ["Sale Price", invoice.sale_price],
+      ["Deposit", invoice.deposit],
+      ["Part Exchange", invoice.px_value],
+      ["Settlement", invoice.settlement_amount],
+      ["Delivery Fee", invoice.delivery_fee],
+      ["Warranty", invoice.warranty],
+    ].map(([label, value]) => (
+      <tr key={label}>
+        <td style={{ padding: "8px", borderBottom: "1px solid #ddd" }}>{label}</td>
+        <td style={{ padding: "8px", borderBottom: "1px solid #ddd", textAlign: "right" }}>
+          £{value || 0}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
     </div>
 
     {/* FINANCE */}
@@ -118,19 +117,25 @@ export default function InvoicePage() {
     )}
 
     {/* TOTAL */}
-    <div style={{ borderTop: "2px solid #000", paddingTop: "20px" }}>
-      <h2>Summary</h2>
+  <div style={{
+  marginTop: "20px",
+  padding: "15px",
+  background: "#f5f5f5",
+  borderRadius: "8px"
+}}>
+  <p>
+    <b>Equity:</b>{" "}
+    <span style={{ color: invoice.negative_equity >= 0 ? "green" : "red" }}>
+      £{invoice.negative_equity}
+    </span>
+  </p>
 
-      <p>
-        <b>Equity:</b>{" "}
-        <span style={{ color: invoice.negative_equity >= 0 ? "green" : "red" }}>
-          £{invoice.negative_equity}
-        </span>
-      </p>
+  <p><b>Final Price:</b> £{invoice.final_price}</p>
 
-      <p><b>Final Price:</b> £{invoice.final_price}</p>
-      <h2>Balance: £{invoice.balance}</h2>
-    </div>
+  <h2 style={{ marginTop: "10px" }}>
+    Balance: £{invoice.balance}
+  </h2>
+</div>
 
     {/* PRINT BUTTON */}
     <button
