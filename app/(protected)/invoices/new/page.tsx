@@ -13,7 +13,8 @@ export default function NewInvoice() {
   const [buyer, setBuyer] = useState("");
   const [salePrice, setSalePrice] = useState(0);
   const [deposit, setDeposit] = useState(0);
-
+const [deliveryFee, setDeliveryFee] = useState(0);
+const [warranty, setWarranty] = useState(0);
   const [color, setColor] = useState("");
 const [vin, setVin] = useState("");
 const [dateOfReg, setDateOfReg] = useState("");
@@ -32,7 +33,7 @@ const [interest, setInterest] = useState(10);
   // 🔥 Calculations
   const equity = pxValue - settlement;
 
-const finalPrice = salePrice + (settlement - pxValue);
+const finalPrice = salePrice - equity + deliveryFee + warranty;
 
 const balance = finalPrice - deposit;
 
@@ -101,6 +102,7 @@ const card = {
 
 const input = {
   width: "100%",
+  maxWidth: "300px",
   padding: "10px",
   marginTop: "10px",
   border: "1px solid #ccc",
@@ -121,7 +123,7 @@ const label = {
 };
 const formRow = {
   display: "grid",
-  gridTemplateColumns: "200px 1fr",
+  gridTemplateColumns: "200px 300px",
   alignItems: "center",
   marginBottom: "12px"
 };
@@ -286,20 +288,25 @@ const button = {
     <p><strong>Balance: £{balance}</strong></p>
   </div>
 
-  <div style={{ marginTop: "20px" }}>
-    <p>
-      Equity:{" "}
-      <b style={{ color: equity >= 0 ? "green" : "red" }}>
-        £{equity}
-      </b>
-    </p>
+  <div style={formRow}>
+  <label style={label}>Delivery Fee (£)</label>
+  <input
+    type="number"
+    value={deliveryFee}
+    onChange={(e) => setDeliveryFee(Number(e.target.value) || 0)}
+    style={input}
+  />
+</div>
 
-    <p>Final Price: £{finalPrice}</p>
-
-    <p>
-      <strong>Balance: £{balance}</strong>
-    </p>
-  </div>
+<div style={formRow}>
+  <label style={label}>Warranty (£)</label>
+  <input
+    type="number"
+    value={warranty}
+    onChange={(e) => setWarranty(Number(e.target.value) || 0)}
+    style={input}
+  />
+</div>
 
       {/* FINANCE */}
 <div style={card}>
@@ -355,19 +362,7 @@ const button = {
       </div>
     </>
   )}
-</div>
-
-      <div style={{ marginTop: "20px" }}>
-        <p>
-  Equity:{" "}
-  <strong style={{ color: equity >= 0 ? "green" : "red" }}>
-    £{equity}
-  </strong>
-</p>
-
-<p>Final Price: £{finalPrice}</p>
-        <p><strong>Balance: £{balance}</strong></p>
-      </div>
+</div>  
     </div>
 
     {/* BUTTON */}
