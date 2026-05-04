@@ -56,6 +56,7 @@ const monthlyPayment =
       .toLowerCase()
       .includes(search.toLowerCase())
   );
+  
 
   const handleSubmit = async () => {
     if (!buyer || !selectedVehicle) {
@@ -112,6 +113,12 @@ const grid = {
   gap: "10px"
 };
 
+const label = {
+  fontSize: "13px",
+  fontWeight: "bold",
+  marginTop: "10px",
+  display: "block"
+};
 const dropdown = {
   border: "1px solid #ccc",
   maxHeight: "150px",
@@ -211,37 +218,64 @@ const button = {
 
     {/* DEAL */}
     <div style={card}>
-      <h3>Deal</h3>
+  <h3>Deal</h3>
 
-      <div style={grid}>
-        <input
-          type="number"
-          placeholder="Sale Price"
-          onChange={(e) => setSalePrice(Number(e.target.value))}
-          style={input}
-        />
+  <div style={grid}>
+    <div>
+     <label style={label}>Sale Price (£)</label>
+      <input
+        type="number"
+        placeholder="e.g. 10000"
+        onChange={(e) => setSalePrice(Number(e.target.value))}
+        style={input}
+      />
+    </div>
 
-        <input
-          type="number"
-          placeholder="Deposit"
-          onChange={(e) => setDeposit(Number(e.target.value))}
-          style={input}
-        />
+    <div>
+    <label style={label}>Deposit (£)</label>
+      <input
+        type="number"
+        placeholder="e.g. 1000"
+        onChange={(e) => setDeposit(Number(e.target.value))}
+        style={input}
+      />
+    </div>
 
-        <input
-          type="number"
-          placeholder="PX Value"
-          onChange={(e) => setPxValue(Number(e.target.value))}
-          style={input}
-        />
+    <div>
+<label style={label}>Part Exchange Value (£)</label>
+      <input
+        type="number"
+        placeholder="e.g. 3000"
+        onChange={(e) => setPxValue(Number(e.target.value))}
+        style={input}
+      />
+    </div>
 
-        <input
-          type="number"
-          placeholder="Settlement"
-          onChange={(e) => setSettlement(Number(e.target.value))}
-          style={input}
-        />
-      </div>
+    <div>
+<label style={label}>Settlement (£)</label>      <input
+        type="number"
+        placeholder="e.g. 4500"
+        onChange={(e) => setSettlement(Number(e.target.value))}
+        style={input}
+      />
+    </div>
+  </div>
+
+  <div style={{ marginTop: "20px" }}>
+    <p>
+      Equity:{" "}
+      <b style={{ color: equity >= 0 ? "green" : "red" }}>
+        £{equity}
+      </b>
+    </p>
+
+    <p>Final Price: £{finalPrice}</p>
+
+    <p>
+      <strong>Balance: £{balance}</strong>
+    </p>
+  </div>
+
       {/* FINANCE */}
 <div style={card}>
   <h3>Finance</h3>
@@ -258,27 +292,34 @@ const button = {
   {isFinance && (
     <>
       <div style={grid}>
-        <input
-          placeholder="Finance Company (e.g. Close Brothers)"
-          onChange={(e) => setFinanceCompany(e.target.value)}
-          style={input}
-        />
+        <div>
+          <label>Finance Company</label>
+          <input
+            placeholder="e.g. Close Brothers"
+            onChange={(e) => setFinanceCompany(e.target.value)}
+            style={input}
+          />
+        </div>
 
-        <input
-          type="number"
-          placeholder="Term (months)"
-          value={term}
-          onChange={(e) => setTerm(Number(e.target.value))}
-          style={input}
-        />
+        <div>
+          <label>Term (Months)</label>
+          <input
+            type="number"
+            value={term}
+            onChange={(e) => setTerm(Number(e.target.value))}
+            style={input}
+          />
+        </div>
 
-        <input
-          type="number"
-          placeholder="Interest %"
-          value={interest}
-          onChange={(e) => setInterest(Number(e.target.value))}
-          style={input}
-        />
+        <div>
+          <label>Interest Rate (%)</label>
+          <input
+            type="number"
+            value={interest}
+            onChange={(e) => setInterest(Number(e.target.value))}
+            style={input}
+          />
+        </div>
       </div>
 
       <div style={{ marginTop: "15px" }}>
